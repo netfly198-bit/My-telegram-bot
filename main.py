@@ -2,7 +2,25 @@ import telebot
 from telebot import types
 import json
 import os
+from flask import Flask
+from threading import Thread
 
+# --- إعداد خادم Web بسيط لإبقاء Render مستيقظاً ---
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "Bot is alive! 🚀", 200
+
+def run_flask():
+    # Render يحدد المنفذ تلقائياً عبر PORT
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host='0.0.0.0', port=port)
+
+# تشغيل خادم Web في خيط فرعي (Thread)
+Thread(target=run_flask, daemon=True).start()
+
+# --- كود البوت الرئيسي ---
 API_TOKEN = '8988674887:AAEv3JCa9TyvtdBkedSnOjddJoXCLD3gAeM'
 bot = telebot.TeleBot(API_TOKEN)
 
@@ -18,7 +36,7 @@ def save_data(data):
     with open(DATA_FILE, 'w') as f: 
         json.dump(data, f)
 
-# قائمة الفيديوهات مع تعديل الأسماء بالعربية والإنجليزية (فيديو صغار / Kids Video)
+# قائمة الفيديوهات
 VIDEOS = [
     {"title": {"ar": "🎬 فيديو صغار 1", "en": "🎬 Kids Video 1"}, "price": 100, "files": ["BAACAgQAAxkBAAOTaoF4SmIIw3ue1_JiWTrwjLCKXL8AAnMmAAKDWAlQvtpTmD9RpCo9BA"]},
     {"title": {"ar": "🎬 فيديو صغار 2", "en": "🎬 Kids Video 2"}, "price": 50, "files": ["BAACAgQAAxkBAAOZaoF4yfdx1YSkg7OQgcnOxmXRRWwAAnQmAAKDWAlQ2h1DDfXHybw9BA"]},
@@ -65,12 +83,10 @@ TEXTS = {
     }
 }
 
-# أداة المطور لاستخراج file_id
 @bot.message_handler(content_types=['video'])
 def get_file_id(message):
     bot.reply_to(message, f"⚙️ **Developer Tools**\n\nFile ID:\n`{message.video.file_id}`", parse_mode="Markdown")
 
-# أمر start لتحديد اللغة أو فتح القائمة
 @bot.message_handler(commands=['start'])
 def start_cmd(message):
     user_id = str(message.chat.id)
@@ -79,7 +95,6 @@ def start_cmd(message):
     if user_id not in data:
         data[user_id] = {"invites": 0, "referred_by": [], "lang": None}
     
-    # معالجة رابط الدعوة
     args = message.text.split()
     if len(args) > 1:
         referrer_id = args[1]
@@ -96,8 +111,6 @@ def start_cmd(message):
                     pass
     
     save_data(data)
-    
-    # واجهة اختيار اللغة أولاً
     show_language_selection(message.chat.id)
 
 def show_language_selection(chat_id):
@@ -225,5 +238,5 @@ def handle_payment(call):
 
 if __name__ == "__main__":
     bot.remove_webhook()
-    print("🚀 البوت يعمل الآن بكافة التعديلات واللغتين...")
+    print("🚀 البوت يعمل الآن...")
     bot.infinity_polling()
