@@ -5,55 +5,69 @@ from telebot import types
 API_TOKEN = '8988674887:AAEv3JCa9TyvtdBkedSnOjddJoXCLD3gAeM'
 bot = telebot.TeleBot(API_TOKEN)
 
-# قائمة الفيديوهات (قم بملء الـ file_id من البوت)
+# قائمة الفيديوهات (يمكنك التعديل هنا دائماً)
 VIDEOS = [
-    {"title": "فيديو صغار 1", "price": 100, "file_id": "BAACAgQAAxkBAAOTaoF4SmIIw3ue1_JiWTrwjLCKXL8AAnMmAAKDWAlQvtpTmD9RpCo9BA"},
-    {"title": "فيديو صغار 2", "price": 50, "file_id": "BAACAgQAAxkBAAOZaoF4yfdx1YSkg7OQgcnOxmXRRWwAAnQmAAKDWAlQ2h1DDfXHybw9BA"},
-    {"title": "فيديو صغار 3", "price": 80, "file_id": "BAACAgQAAxkBAAPIaoGAO8dW7pBN2wWZZjaVnTo7hzgAApQmAAKDWAlQ6t38o7hZhD89BA"},
-    {"title": "فيديو صغار 4", "price": 30, "file_id": "BAACAgQAAxkBAAPKaoGAmVULFnPyK4KK7iEu-mTMGokAApUmAAKDWAlQYwaLhz0XVPg9BA"},
-    {"title": "فيديو صغار 5", "price": 10, "file_id": "BAACAgQAAxkBAAPMaoGA30T8l98AARfuLcX_4aR1poopAAKWJgACg1gJUGxbIgjCo2mHPQQ"},
-    {"title": "فيديو صغار 6", "price": 20, "file_id": "BAACAgQAAxkBAAPOaoGBTgONgOPCzUSVSbNmr_9L7fkAApcmAAKDWAlQt2rlRjg2HWw9BA"},
-    {"title": "فيديو صغار 7", "price": 5, "file_id": "BAACAgQAAxkBAAPQaoGBpmpS01FKI76SBW8jWszZ0hUAApomAAKDWAlQBsuvYG2_evg9BA"},
-    {"title": "فيديو صغار 8", "price": 10, "file_id": "BAACAgQAAxkBAAPSaoGCCHt1RWrujcuACizOoMtE0NwAApsmAAKDWAlQ2qYd_qGtm189BA"},
-    {"title": "فيديو صغار 9", "price": 20, "file_id": "BAACAgQAAxkBAAPUaoGCQ4oxJO908uwGpnQC3GDhHbkAAp0mAAKDWAlQnX2lCf-XR_s9BA"},
-    {"title": "فيديو صغار 10", "price": 10, "file_id": "BAACAgQAAxkBAAPWaoGCkKlsl7W2_tuRASdANbBJKb8AAp4mAAKDWAlQ00ZyCh2mx_g9BA"},
-    {"title": "فيديو صغار 11", "price": 15, "file_id": "BAACAgQAAxkBAAPYaoGD_pFdFbIAAfm0D0SHYjLmU08UAAKhJgACg1gJUOF1tacNyCI9PQQ"},
-    {"title": "فيديو صغار 12", "price": 5, "file_id": "BAACAgQAAxkBAAPaaoGEBldmtCGO61G3RvrDdvBxLSYAAqImAAKDWAlQGntSynT_5_s9BA"},
-    {"title": "فيديو صغار 13", "price": 20, "file_id": "BAACAgQAAxkBAAPcaoGEDuUocyh0oY8HX7gzuylCQHkAAqMmAAKDWAlQF6a9IWNmnYY9BA"},
-    {"title": "فيديو صغار 14", "price": 10, "file_id": "BAACAgQAAxkBAAPeaoGEFh__YOZMpyQR0zeW9A2CTy0AAqQmAAKDWAlQznUfrhZe6Jk9BA"},
-    {"title": "فيديو صغار 15", "price": 10, "file_id": "BAACAgQAAxkBAAPmojiEHnGVlF6BicCOMS5GqgukazIAAqYmAAKDWAlQ0V8G4lEDz2o9BA"},
-    {"title": "فيديو صغار 16", "price": 15, "file_id": "BAACAgQAAxkBAAPkaoGEJodz2PK7F45B7O73km3tm1sAAqcmAAKDWAlQ1A41dgTSaic9BA"}
+    {"title": "🎬 فيديو صغار 1", "price": 100, "file_id": "BAACAgQAAxkBAAOTaoF4SmIIw3ue1_JiWTrwjLCKXL8AAnMmAAKDWAlQvtpTmD9RpCo9BA"},
+    {"title": "🎬 فيديو صغار 2", "price": 50, "file_id": "BAACAgQAAxkBAAOZaoF4yfdx1YSkg7OQgcnOxmXRRWwAAnQmAAKDWAlQ2h1DDfXHybw9BA"},
+    {"title": "🎬 فيديو صغار 3", "price": 80, "file_id": "BAACAgQAAxkBAAPIaoGAO8dW7pBN2wWZZjaVnTo7hzgAApQmAAKDWAlQ6t38o7hZhD89BA"},
+    {"title": "🎬 فيديو صغار 4", "price": 30, "file_id": "BAACAgQAAxkBAAPKaoGAmVULFnPyK4KK7iEu-mTMGokAApUmAAKDWAlQYwaLhz0XVPg9BA"},
+    {"title": "🎬 فيديو صغار 5", "price": 10, "file_id": "BAACAgQAAxkBAAPMaoGA30T8l98AARfuLcX_4aR1poopAAKWJgACg1gJUGxbIgjCo2mHPQQ"},
+    {"title": "🎬 فيديو صغار 6", "price": 20, "file_id": "BAACAgQAAxkBAAPOaoGBTgONgOPCzUSVSbNmr_9L7fkAApcmAAKDWAlQt2rlRjg2HWw9BA"},
+    {"title": "🎬 فيديو صغار 7", "price": 5, "file_id": "BAACAgQAAxkBAAPQaoGBpmpS01FKI76SBW8jWszZ0hUAApomAAKDWAlQBsuvYG2_evg9BA"},
+    {"title": "🎬 فيديو صغار 8", "price": 10, "file_id": "BAACAgQAAxkBAAPSaoGCCHt1RWrujcuACizOoMtE0NwAApsmAAKDWAlQ2qYd_qGtm189BA"},
+    {"title": "🎬 فيديو صغار 9", "price": 20, "file_id": "BAACAgQAAxkBAAPUaoGCQ4oxJO908uwGpnQC3GDhHbkAAp0mAAKDWAlQnX2lCf-XR_s9BA"},
+    {"title": "🎬 فيديو صغار 10", "price": 10, "file_id": "BAACAgQAAxkBAAPWaoGCkKlsl7W2_tuRASdANbBJKb8AAp4mAAKDWAlQ00ZyCh2mx_g9BA"},
+    {"title": "🎬 فيديو صغار 11", "price": 15, "file_id": "BAACAgQAAxkBAAPYaoGD_pFdFbIAAfm0D0SHYjLmU08UAAKhJgACg1gJUOF1tacNyCI9PQQ"},
+    {"title": "🎬 فيديو صغار 12", "price": 5, "file_id": "BAACAgQAAxkBAAPaaoGEBldmtCGO61G3RvrDdvBxLSYAAqImAAKDWAlQGntSynT_5_s9BA"},
+    {"title": "🎬 فيديو صغار 13", "price": 20, "file_id": "BAACAgQAAxkBAAPcaoGEDuUocyh0oY8HX7gzuylCQHkAAqMmAAKDWAlQF6a9IWNmnYY9BA"},
+    {"title": "🎬 فيديو صغار 14", "price": 10, "file_id": "BAACAgQAAxkBAAPeaoGEFh__YOZMpyQR0zeW9A2CTy0AAqQmAAKDWAlQznUfrhZe6Jk9BA"},
+    {"title": "🎬 فيديو صغار 15", "price": 10, "file_id": "BAACAgQAAxkBAAPmojiEHnGVlF6BicCOMS5GqgukazIAAqYmAAKDWAlQ0V8G4lEDz2o9BA"},
+    {"title": "🎬 فيديو صغار 16", "price": 15, "file_id": "BAACAgQAAxkBAAPkaoGEJodz2PK7F45B7O73km3tm1sAAqcmAAKDWAlQ1A41dgTSaic9BA"}
 ]
 
-# 1. نظام استخراج الـ file_id للفيديوهات (للفيديو الواحد وللمجموعة)
-@bot.message_handler(content_types=['video'])
-def get_file_id(message):
-    bot.reply_to(message, f"✅ الـ file_id لهذا الفيديو:\n`{message.video.file_id}`", parse_mode="Markdown")
+# رسالة ترحيب فخمة
+WELCOME_MSG = """
+✨ **مرحباً بك في متجرنا الرقمي المميز!** ✨
 
-@bot.message_handler(content_types=['video_note'])
-def get_videonote_id(message):
-    bot.reply_to(message, f"✅ الـ file_id لهذا الفيديو المرئي:\n`{message.video_note.file_id}`", parse_mode="Markdown")
+هنا يمكنك الحصول على أجود الفيديوهات الحصرية بأسعار تنافسية.
+استخدم النجوم ⭐ للوصول إلى محتواك المفضل فوراً.
 
-# 2. القائمة الرئيسية
+💎 **كيفية الاستخدام:**
+1. تصفح القائمة بالأسفل.
+2. اضغط على الفيديو الذي ترغب في اقتنائه.
+3. تابع عملية الدفع بالنجوم واستمتع بالمشاهدة!
+
+🔥 _جودة عالية، سرعة فائقة، تجربة لا مثيل لها._
+"""
+
+# نظام الأوامر
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     markup = types.InlineKeyboardMarkup(row_width=1)
     for i, video in enumerate(VIDEOS):
-        markup.add(types.InlineKeyboardButton(f"{video['title']} - ⭐ {video['price']}", callback_data=f"pay_{i}"))
-    bot.send_message(message.chat.id, "🎬 أهلاً بك! اختر الفيديو الذي تريد شراءه:", reply_markup=markup)
+        markup.add(types.InlineKeyboardButton(f"{video['title']} | ⭐ {video['price']}", callback_data=f"pay_{i}"))
+    
+    bot.send_message(message.chat.id, WELCOME_MSG, reply_markup=markup, parse_mode="Markdown")
 
-# 3. نظام إرسال الفيديوهات المقفلة (Paid Media)
+# نظام الدفع الفخم
 @bot.callback_query_handler(func=lambda call: call.data.startswith("pay_"))
 def handle_payment(call):
     index = int(call.data.split("_")[1])
     video = VIDEOS[index]
     
+    bot.answer_callback_query(call.id, f"جاري تحضير {video['title']}...")
+    
     bot.send_paid_media(
         chat_id=call.message.chat.id,
         star_count=video['price'],
-        media=[types.InputMediaVideo(media=video['file_id'], caption=video['title'])]
+        media=[types.InputMediaVideo(media=video['file_id'], caption=f"✨ شكراً لثقتك!\nاستمتع بمشاهدة: {video['title']}")]
     )
 
+# أداة المطورين (خفية ومفيدة جداً)
+@bot.message_handler(content_types=['video'])
+def get_file_id(message):
+    bot.reply_to(message, f"⚙️ **Developer Tools**\n\nFile ID:\n`{message.video.file_id}`", parse_mode="Markdown")
+
 if __name__ == "__main__":
-    print("البوت يعمل الآن...")
+    print("🚀 البوت يعمل الآن بكامل طاقته...")
     bot.infinity_polling()
