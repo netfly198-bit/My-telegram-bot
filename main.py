@@ -18,7 +18,7 @@ def save_data(data):
     with open(DATA_FILE, 'w') as f: 
         json.dump(data, f)
 
-# قائمة الفيديوهات
+# قائمة الفيديوهات الحماسية الحصرية
 VIDEOS = [
     {"title": {"ar": "🎬 فيديو حماسي 1", "en": "🎬 Action Video 1"}, "price": 100, "files": ["BAACAgQAAxkBAAOTaoF4SmIIw3ue1_JiWTrwjLCKXL8AAnMmAAKDWAlQvtpTmD9RpCo9BA"]},
     {"title": {"ar": "🎬 فيديو حماسي 2", "en": "🎬 Action Video 2"}, "price": 50, "files": ["BAACAgQAAxkBAAOZaoF4yfdx1YSkg7OQgcnOxmXRRWwAAnQmAAKDWAlQ2h1DDfXHybw9BA"]},
@@ -40,7 +40,7 @@ VIDEOS = [
 
 TEXTS = {
     "ar": {
-        "welcome": "✨ **أهلاً بك في بوت الفيديوهات الساخنة 💋 !** ✨\n\nاختر من القائمة أدناه ما يناسبك:",
+        "welcome": "✨ **أهلاً بك في بوت الفيديوهات الحماسية الحصرية!** ✨\n\nاختر من القائمة أدناه ما يناسبك:",
         "btn_videos": "🎬 الفيديوهات الحماسية الحصرية",
         "btn_discount": "🎁 عرض خاص 50%",
         "btn_lang": "🌐 تغيير اللغة / Change Language",
@@ -52,7 +52,7 @@ TEXTS = {
         "new_invite": "🎉 انضم شخص جديد عبر رابطك!"
     },
     "en": {
-        "welcome": "✨ **Welcome to Exclusive Hot Videos Bot!** ✨\n\nPlease choose an option from below:",
+        "welcome": "✨ **Welcome to Exclusive Action Videos Bot!** ✨\n\nPlease choose an option from below:",
         "btn_videos": "🎬 Exclusive Action Videos",
         "btn_discount": "🎁 Special Offer 50%",
         "btn_lang": "🌐 Change Language / تغيير اللغة",
@@ -97,11 +97,8 @@ def start_cmd(message):
     
     save_data(data)
     
-    # إذا لم يختر اللغة بعد، تظهر واجهة اختيار اللغة
-    if not data[user_id].get("lang"):
-        show_language_selection(message.chat.id)
-    else:
-        show_main_menu(message.chat.id, data[user_id]["lang"])
+    # واجهة اختيار اللغة أولاً
+    show_language_selection(message.chat.id)
 
 def show_language_selection(chat_id):
     markup = types.InlineKeyboardMarkup(row_width=2)
@@ -227,5 +224,6 @@ def handle_payment(call):
     )
 
 if __name__ == "__main__":
+    bot.remove_webhook()
     print("🚀 البوت يعمل الآن بالنظام المزدوج واللغات...")
     bot.infinity_polling()
