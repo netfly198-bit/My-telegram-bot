@@ -18,46 +18,46 @@ def save_data(data):
     with open(DATA_FILE, 'w') as f: 
         json.dump(data, f)
 
-# قائمة الفيديوهات الحماسية الحصرية
+# قائمة الفيديوهات مع تعديل الأسماء بالعربية والإنجليزية (فيديو صغار / Kids Video)
 VIDEOS = [
-    {"title": {"ar": "🎬 فيديو حماسي 1", "en": "🎬 Action Video 1"}, "price": 100, "files": ["BAACAgQAAxkBAAOTaoF4SmIIw3ue1_JiWTrwjLCKXL8AAnMmAAKDWAlQvtpTmD9RpCo9BA"]},
-    {"title": {"ar": "🎬 فيديو حماسي 2", "en": "🎬 Action Video 2"}, "price": 50, "files": ["BAACAgQAAxkBAAOZaoF4yfdx1YSkg7OQgcnOxmXRRWwAAnQmAAKDWAlQ2h1DDfXHybw9BA"]},
-    {"title": {"ar": "🎬 فيديو حماسي 3", "en": "🎬 Action Video 3"}, "price": 80, "files": ["BAACAgQAAxkBAAPIaoGAO8dW7pBN2wWZZjaVnTo7hzgAApQmAAKDWAlQ6t38o7hZhD89BA"]},
-    {"title": {"ar": "🎬 فيديو حماسي 4", "en": "🎬 Action Video 4"}, "price": 30, "files": ["BAACAgQAAxkBAAPKaoGAmVULFnPyK4KK7iEu-mTMGokAApUmAAKDWAlQYwaLhz0XVPg9BA"]},
-    {"title": {"ar": "🎬 فيديو حماسي 5", "en": "🎬 Action Video 5"}, "price": 10, "files": ["BAACAgQAAxkBAAPMaoGA30T8l98AARfuLcX_4aR1poopAAKWJgACg1gJUGxbIgjCo2mHPQQ"]},
-    {"title": {"ar": "🎬 فيديو حماسي 6", "en": "🎬 Action Video 6"}, "price": 20, "files": ["BAACAgQAAxkBAAPOaoGBTgONgOPCzUSVSbNmr_9L7fkAApcmAAKDWAlQt2rlRjg2HWw9BA"]},
-    {"title": {"ar": "🎬 فيديو حماسي 7", "en": "🎬 Action Video 7"}, "price": 5, "files": ["BAACAgQAAxkBAAPQaoGBpmpS01FKI76SBW8jWszZ0hUAApomAAKDWAlQBsuvYG2_evg9BA"]},
-    {"title": {"ar": "🎬 فيديو حماسي 8", "en": "🎬 Action Video 8"}, "price": 10, "files": ["BAACAgQAAxkBAAPSaoGCCHt1RWrujcuACizOoMtE0NwAApsmAAKDWAlQ2qYd_qGtm189BA"]},
-    {"title": {"ar": "🎬 فيديو حماسي 9", "en": "🎬 Action Video 9"}, "price": 20, "files": ["BAACAgQAAxkBAAPUaoGCQ4oxJO908uwGpnQC3GDhHbkAAp0mAAKDWAlQnX2lCf-XR_s9BA"]},
-    {"title": {"ar": "🎬 فيديو حماسي 10", "en": "🎬 Action Video 10"}, "price": 10, "files": ["BAACAgQAAxkBAAPWaoGCkKlsl7W2_tuRASdANbBJKb8AAp4mAAKDWAlQ00ZyCh2mx_g9BA"]},
-    {"title": {"ar": "🎬 فيديو حماسي 11", "en": "🎬 Action Video 11"}, "price": 15, "files": ["BAACAgQAAxkBAAPYaoGD_pFdFbIAAfm0D0SHYjLmU08UAAKhJgACg1gJUOF1tacNyCI9PQQ"]},
-    {"title": {"ar": "🎬 فيديو حماسي 12", "en": "🎬 Action Video 12"}, "price": 5, "files": ["BAACAgQAAxkBAAPaaoGEBldmtCGO61G3RvrDdvBxLSYAAqImAAKDWAlQGntSynT_5_s9BA"]},
-    {"title": {"ar": "🎬 فيديو حماسي 13", "en": "🎬 Action Video 13"}, "price": 20, "files": ["BAACAgQAAxkBAAPcaoGEDuUocyh0oY8HX7gzuylCQHkAAqMmAAKDWAlQF6a9IWNmnYY9BA"]},
-    {"title": {"ar": "🎬 فيديو حماسي 14", "en": "🎬 Action Video 14"}, "price": 10, "files": ["BAACAgQAAxkBAAPeaoGEFh__YOZMpyQR0zeW9A2CTy0AAqQmAAKDWAlQznUfrhZe6Jk9BA"]},
-    {"title": {"ar": "🎬 فيديو حماسي 15", "en": "🎬 Action Video 15"}, "price": 10, "files": ["BAACAgQAAxkBAAPmojiEHnGVlF6BicCOMS5GqgukazIAAqYmAAKDWAlQ0V8G4lEDz2o9BA"]},
-    {"title": {"ar": "🎬 فيديو حماسي 16", "en": "🎬 Action Video 16"}, "price": 15, "files": ["BAACAgQAAxkBAAPkaoGEJodz2PK7F45B7O73km3tm1sAAqcmAAKDWAlQ1A41dgTSaic9BA"]}
+    {"title": {"ar": "🎬 فيديو صغار 1", "en": "🎬 Kids Video 1"}, "price": 100, "files": ["BAACAgQAAxkBAAOTaoF4SmIIw3ue1_JiWTrwjLCKXL8AAnMmAAKDWAlQvtpTmD9RpCo9BA"]},
+    {"title": {"ar": "🎬 فيديو صغار 2", "en": "🎬 Kids Video 2"}, "price": 50, "files": ["BAACAgQAAxkBAAOZaoF4yfdx1YSkg7OQgcnOxmXRRWwAAnQmAAKDWAlQ2h1DDfXHybw9BA"]},
+    {"title": {"ar": "🎬 فيديو صغار 3", "en": "🎬 Kids Video 3"}, "price": 80, "files": ["BAACAgQAAxkBAAPIaoGAO8dW7pBN2wWZZjaVnTo7hzgAApQmAAKDWAlQ6t38o7hZhD89BA"]},
+    {"title": {"ar": "🎬 فيديو صغار 4", "en": "🎬 Kids Video 4"}, "price": 30, "files": ["BAACAgQAAxkBAAPKaoGAmVULFnPyK4KK7iEu-mTMGokAApUmAAKDWAlQYwaLhz0XVPg9BA"]},
+    {"title": {"ar": "🎬 فيديو صغار 5", "en": "🎬 Kids Video 5"}, "price": 10, "files": ["BAACAgQAAxkBAAPMaoGA30T8l98AARfuLcX_4aR1poopAAKWJgACg1gJUGxbIgjCo2mHPQQ"]},
+    {"title": {"ar": "🎬 فيديو صغار 6", "en": "🎬 Kids Video 6"}, "price": 20, "files": ["BAACAgQAAxkBAAPOaoGBTgONgOPCzUSVSbNmr_9L7fkAApcmAAKDWAlQt2rlRjg2HWw9BA"]},
+    {"title": {"ar": "🎬 فيديو صغار 7", "en": "🎬 Kids Video 7"}, "price": 5, "files": ["BAACAgQAAxkBAAPQaoGBpmpS01FKI76SBW8jWszZ0hUAApomAAKDWAlQBsuvYG2_evg9BA"]},
+    {"title": {"ar": "🎬 فيديو صغار 8", "en": "🎬 Kids Video 8"}, "price": 10, "files": ["BAACAgQAAxkBAAPSaoGCCHt1RWrujcuACizOoMtE0NwAApsmAAKDWAlQ2qYd_qGtm189BA"]},
+    {"title": {"ar": "🎬 فيديو صغار 9", "en": "🎬 Kids Video 9"}, "price": 20, "files": ["BAACAgQAAxkBAAPUaoGCQ4oxJO908uwGpnQC3GDhHbkAAp0mAAKDWAlQnX2lCf-XR_s9BA"]},
+    {"title": {"ar": "🎬 فيديو صغار 10", "en": "🎬 Kids Video 10"}, "price": 10, "files": ["BAACAgQAAxkBAAPWaoGCkKlsl7W2_tuRASdANbBJKb8AAp4mAAKDWAlQ00ZyCh2mx_g9BA"]},
+    {"title": {"ar": "🎬 فيديو صغار 11", "en": "🎬 Kids Video 11"}, "price": 15, "files": ["BAACAgQAAxkBAAPYaoGD_pFdFbIAAfm0D0SHYjLmU08UAAKhJgACg1gJUOF1tacNyCI9PQQ"]},
+    {"title": {"ar": "🎬 فيديو صغار 12", "en": "🎬 Kids Video 12"}, "price": 5, "files": ["BAACAgQAAxkBAAPaaoGEBldmtCGO61G3RvrDdvBxLSYAAqImAAKDWAlQGntSynT_5_s9BA"]},
+    {"title": {"ar": "🎬 فيديو صغار 13", "en": "🎬 Kids Video 13"}, "price": 20, "files": ["BAACAgQAAxkBAAPcaoGEDuUocyh0oY8HX7gzuylCQHkAAqMmAAKDWAlQF6a9IWNmnYY9BA"]},
+    {"title": {"ar": "🎬 فيديو صغار 14", "en": "🎬 Kids Video 14"}, "price": 10, "files": ["BAACAgQAAxkBAAPeaoGEFh__YOZMpyQR0zeW9A2CTy0AAqQmAAKDWAlQznUfrhZe6Jk9BA"]},
+    {"title": {"ar": "🎬 فيديو صغار 15", "en": "🎬 Kids Video 15"}, "price": 10, "files": ["BAACAgQAAxkBAAPmojiEHnGVlF6BicCOMS5GqgukazIAAqYmAAKDWAlQ0V8G4lEDz2o9BA"]},
+    {"title": {"ar": "🎬 فيديو صغار 16", "en": "🎬 Kids Video 16"}, "price": 15, "files": ["BAACAgQAAxkBAAPkaoGEJodz2PK7F45B7O73km3tm1sAAqcmAAKDWAlQ1A41dgTSaic9BA"]}
 ]
 
 TEXTS = {
     "ar": {
-        "welcome": "✨ **أهلاً بك في بوت الفيديوهات الحماسية الحصرية!** ✨\n\nاختر من القائمة أدناه ما يناسبك:",
-        "btn_videos": "🎬 الفيديوهات الحماسية الحصرية",
+        "welcome": "✨ **أهلاً بك في البوت الخاص بنا!** ✨\n\nاختر من القائمة أدناه ما يناسبك:",
+        "btn_videos": "🎬 الفيديوهات المتاحة",
         "btn_discount": "🎁 عرض خاص 50%",
         "btn_lang": "🌐 تغيير اللغة / Change Language",
-        "videos_header": "🎬 **قائمة الفيديوهات الحماسية المتاحة:**",
-        "discount_info": "🎁 **عرض خاص 50%**\n\nاحصل على تخفيض **50%** على جميع الفيديوهات الحماسية!\nكل ما عليك هو دعوة **20 شخصاً** عبر رابطك الخاص لتفعيل العرض تلقائياً.\n\n📊 **رصيدك الحالي:** {invites} / 20 دعوة.\n📌 **حالة العرض:** {status}\n\n🔗 **رابط الدعوة الخاص بك:**\n`{link}`",
+        "videos_header": "🎬 **قائمة الفيديوهات المتاحة:**",
+        "discount_info": "🎁 **عرض خاص 50%**\n\nاحصل على تخفيض **50%** على جميع الفيديوهات!\nكل ما عليك هو دعوة **20 شخصاً** عبر رابطك الخاص لتفعيل العرض تلقائياً.\n\n📊 **رصيدك الحالي:** {invites} / 20 دعوة.\n📌 **حالة العرض:** {status}\n\n🔗 **رابط الدعوة الخاص بك:**\n`{link}`",
         "status_active": "✅ تم تفعيل الخصم 50% بنجاح!",
         "status_pending": "⏳ متبقي لديك: {rem} دعوة لتفعيل الخصم.",
         "btn_back": "🔙 العودة للقائمة الرئيسية",
         "new_invite": "🎉 انضم شخص جديد عبر رابطك!"
     },
     "en": {
-        "welcome": "✨ **Welcome to Exclusive Action Videos Bot!** ✨\n\nPlease choose an option from below:",
-        "btn_videos": "🎬 Exclusive Action Videos",
+        "welcome": "✨ **Welcome to Our Bot!** ✨\n\nPlease choose an option from below:",
+        "btn_videos": "🎬 Available Videos",
         "btn_discount": "🎁 Special Offer 50%",
         "btn_lang": "🌐 Change Language / تغيير اللغة",
-        "videos_header": "🎬 **Available Action Videos:**",
-        "discount_info": "🎁 **Special Offer 50%**\n\nGet a **50% discount** on all action videos!\nInvite **20 people** using your link to unlock the offer automatically.\n\n📊 **Current balance:** {invites} / 20 invites.\n📌 **Status:** {status}\n\n🔗 **Your referral link:**\n`{link}`",
+        "videos_header": "🎬 **Available Videos:**",
+        "discount_info": "🎁 **Special Offer 50%**\n\nGet a **50% discount** on all videos!\nInvite **20 people** using your link to unlock the offer automatically.\n\n📊 **Current balance:** {invites} / 20 invites.\n📌 **Status:** {status}\n\n🔗 **Your referral link:**\n`{link}`",
         "status_active": "✅ 50% discount activated successfully!",
         "status_pending": "⏳ Remaining: {rem} invites to activate discount.",
         "btn_back": "🔙 Back to Main Menu",
@@ -225,5 +225,5 @@ def handle_payment(call):
 
 if __name__ == "__main__":
     bot.remove_webhook()
-    print("🚀 البوت يعمل الآن بالنظام المزدوج واللغات...")
+    print("🚀 البوت يعمل الآن بكافة التعديلات واللغتين...")
     bot.infinity_polling()
