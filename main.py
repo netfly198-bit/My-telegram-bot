@@ -5,7 +5,7 @@ from telebot import types
 API_TOKEN = '8988674887:AAEv3JCa9TyvtdBkedSnOjddJoXCLD3gAeM'
 bot = telebot.TeleBot(API_TOKEN)
 
-# قائمة الفيديوهات الـ 16 كاملة مع أسعارها والـ file_id
+# قائمة الفيديوهات (قم بملء الـ file_id من البوت)
 VIDEOS = [
     {"title": "فيديو صغار 1", "price": 100, "file_id": "BAACAgQAAxkBAAOTaoF4SmIIw3ue1_JiWTrwjLCKXL8AAnMmAAKDWAlQvtpTmD9RpCo9BA"},
     {"title": "فيديو صغار 2", "price": 50, "file_id": "BAACAgQAAxkBAAOZaoF4yfdx1YSkg7OQgcnOxmXRRWwAAnQmAAKDWAlQ2h1DDfXHybw9BA"},
@@ -25,21 +25,29 @@ VIDEOS = [
     {"title": "فيديو صغار 16", "price": 15, "file_id": "BAACAgQAAxkBAAPkaoGEJodz2PK7F45B7O73km3tm1sAAqcmAAKDWAlQ1A41dgTSaic9BA"}
 ]
 
+# 1. نظام استخراج الـ file_id للفيديوهات (للفيديو الواحد وللمجموعة)
+@bot.message_handler(content_types=['video'])
+def get_file_id(message):
+    bot.reply_to(message, f"✅ الـ file_id لهذا الفيديو:\n`{message.video.file_id}`", parse_mode="Markdown")
+
+@bot.message_handler(content_types=['video_note'])
+def get_videonote_id(message):
+    bot.reply_to(message, f"✅ الـ file_id لهذا الفيديو المرئي:\n`{message.video_note.file_id}`", parse_mode="Markdown")
+
+# 2. القائمة الرئيسية
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     markup = types.InlineKeyboardMarkup(row_width=1)
-    # إضافة الأزرار لكل الفيديوهات
     for i, video in enumerate(VIDEOS):
-        markup.add(types.InlineKeyboardButton(f"{video['title']} - ⭐ {video['price']} نجمة", callback_data=f"pay_{i}"))
-    
-    bot.send_message(message.chat.id, "مرحباً! اختر فيديو للمشاهدة والشراء:", reply_markup=markup)
+        markup.add(types.InlineKeyboardButton(f"{video['title']} - ⭐ {video['price']}", callback_data=f"pay_{i}"))
+    bot.send_message(message.chat.id, "🎬 أهلاً بك! اختر الفيديو الذي تريد شراءه:", reply_markup=markup)
 
+# 3. نظام إرسال الفيديوهات المقفلة (Paid Media)
 @bot.callback_query_handler(func=lambda call: call.data.startswith("pay_"))
 def handle_payment(call):
     index = int(call.data.split("_")[1])
     video = VIDEOS[index]
     
-    # إرسال الفيديو كـ "وسائط مدفوعة" (يظهر مغبشاً مع السعر تلقائياً)
     bot.send_paid_media(
         chat_id=call.message.chat.id,
         star_count=video['price'],
@@ -47,4 +55,5 @@ def handle_payment(call):
     )
 
 if __name__ == "__main__":
+    print("البوت يعمل الآن...")
     bot.infinity_polling()
