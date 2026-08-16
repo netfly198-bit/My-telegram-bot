@@ -5,7 +5,7 @@ from telebot import types
 API_TOKEN = '8988674887:AAEv3JCa9TyvtdBkedSnOjddJoXCLD3gAeM'
 bot = telebot.TeleBot(API_TOKEN)
 
-# قائمة الفيديوهات الجاهزة
+# قائمة الفيديوهات والحزم (جاهزة للعمل)
 VIDEOS = [
     {"title": "🎬 فيديو صغار 1", "price": 100, "files": ["BAACAgQAAxkBAAOTaoF4SmIIw3ue1_JiWTrwjLCKXL8AAnMmAAKDWAlQvtpTmD9RpCo9BA"]},
     {"title": "🎬 فيديو صغار 2", "price": 50, "files": ["BAACAgQAAxkBAAOZaoF4yfdx1YSkg7OQgcnOxmXRRWwAAnQmAAKDWAlQ2h1DDfXHybw9BA"]},
@@ -40,12 +40,12 @@ WELCOME_MSG = """
 🔥 _جودة عالية، سرعة فائقة، تجربة لا مثيل لها._
 """
 
-# استخراج الـ file_id
+# استخراج الـ file_id عند إرسال أي فيديو (يعمل لكل فيديو ترسله)
 @bot.message_handler(content_types=['video'])
 def get_file_id(message):
     bot.reply_to(message, f"⚙️ **Developer Tools**\n\nFile ID:\n`{message.video.file_id}`", parse_mode="Markdown")
 
-# القائمة الرئيسية
+# القائمة الرئيسية والترحيب
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     markup = types.InlineKeyboardMarkup(row_width=1)
@@ -53,13 +53,17 @@ def send_welcome(message):
         markup.add(types.InlineKeyboardButton(f"{item['title']} | ⭐ {item['price']}", callback_data=f"buy_{i}"))
     bot.send_message(message.chat.id, WELCOME_MSG, reply_markup=markup, parse_mode="Markdown")
 
-# نظام الدفع
+# نظام الدفع (يفتح الفيديو أو الحزمة للزبون)
 @bot.callback_query_handler(func=lambda call: call.data.startswith("buy_"))
 def handle_payment(call):
     index = int(call.data.split("_")[1])
     item = VIDEOS[index]
+    
     bot.answer_callback_query(call.id, f"جاري تحضير {item['title']}...")
+    
+    # يجهز قائمة الفيديوهات (سواء كانت فيديوا واحداً أو حزمة فيديوهات)
     media_list = [types.InputMediaVideo(media=fid) for fid in item['files']]
+    
     bot.send_paid_media(
         chat_id=call.message.chat.id,
         star_count=item['price'],
