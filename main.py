@@ -13,11 +13,9 @@ def home():
     return "Bot is alive! 🚀", 200
 
 def run_flask():
-    # Render يحدد المنفذ تلقائياً عبر PORT
     port = int(os.environ.get("PORT", 8080))
     app.run(host='0.0.0.0', port=port)
 
-# تشغيل خادم Web في خيط فرعي (Thread)
 Thread(target=run_flask, daemon=True).start()
 
 # --- كود البوت الرئيسي ---
@@ -36,33 +34,59 @@ def save_data(data):
     with open(DATA_FILE, 'w') as f: 
         json.dump(data, f)
 
-# قائمة الفيديوهات
-VIDEOS = [
-    {"title": {"ar": "🎬 فيديو صغار 1", "en": "🎬 Kids Video 1"}, "price": 100, "files": ["BAACAgQAAxkBAAOTaoF4SmIIw3ue1_JiWTrwjLCKXL8AAnMmAAKDWAlQvtpTmD9RpCo9BA"]},
-    {"title": {"ar": "🎬 فيديو صغار 2", "en": "🎬 Kids Video 2"}, "price": 50, "files": ["BAACAgQAAxkBAAOZaoF4yfdx1YSkg7OQgcnOxmXRRWwAAnQmAAKDWAlQ2h1DDfXHybw9BA"]},
-    {"title": {"ar": "🎬 فيديو صغار 3", "en": "🎬 Kids Video 3"}, "price": 80, "files": ["BAACAgQAAxkBAAPIaoGAO8dW7pBN2wWZZjaVnTo7hzgAApQmAAKDWAlQ6t38o7hZhD89BA"]},
-    {"title": {"ar": "🎬 فيديو صغار 4", "en": "🎬 Kids Video 4"}, "price": 30, "files": ["BAACAgQAAxkBAAPKaoGAmVULFnPyK4KK7iEu-mTMGokAApUmAAKDWAlQYwaLhz0XVPg9BA"]},
-    {"title": {"ar": "🎬 فيديو صغار 5", "en": "🎬 Kids Video 5"}, "price": 10, "files": ["BAACAgQAAxkBAAPMaoGA30T8l98AARfuLcX_4aR1poopAAKWJgACg1gJUGxbIgjCo2mHPQQ"]},
-    {"title": {"ar": "🎬 فيديو صغار 6", "en": "🎬 Kids Video 6"}, "price": 20, "files": ["BAACAgQAAxkBAAPOaoGBTgONgOPCzUSVSbNmr_9L7fkAApcmAAKDWAlQt2rlRjg2HWw9BA"]},
-    {"title": {"ar": "🎬 فيديو صغار 7", "en": "🎬 Kids Video 7"}, "price": 5, "files": ["BAACAgQAAxkBAAPQaoGBpmpS01FKI76SBW8jWszZ0hUAApomAAKDWAlQBsuvYG2_evg9BA"]},
-    {"title": {"ar": "🎬 فيديو صغار 8", "en": "🎬 Kids Video 8"}, "price": 10, "files": ["BAACAgQAAxkBAAPSaoGCCHt1RWrujcuACizOoMtE0NwAApsmAAKDWAlQ2qYd_qGtm189BA"]},
-    {"title": {"ar": "🎬 فيديو صغار 9", "en": "🎬 Kids Video 9"}, "price": 20, "files": ["BAACAgQAAxkBAAPUaoGCQ4oxJO908uwGpnQC3GDhHbkAAp0mAAKDWAlQnX2lCf-XR_s9BA"]},
-    {"title": {"ar": "🎬 فيديو صغار 10", "en": "🎬 Kids Video 10"}, "price": 10, "files": ["BAACAgQAAxkBAAPWaoGCkKlsl7W2_tuRASdANbBJKb8AAp4mAAKDWAlQ00ZyCh2mx_g9BA"]},
-    {"title": {"ar": "🎬 فيديو صغار 11", "en": "🎬 Kids Video 11"}, "price": 15, "files": ["BAACAgQAAxkBAAPYaoGD_pFdFbIAAfm0D0SHYjLmU08UAAKhJgACg1gJUOF1tacNyCI9PQQ"]},
-    {"title": {"ar": "🎬 فيديو صغار 12", "en": "🎬 Kids Video 12"}, "price": 5, "files": ["BAACAgQAAxkBAAPaaoGEBldmtCGO61G3RvrDdvBxLSYAAqImAAKDWAlQGntSynT_5_s9BA"]},
-    {"title": {"ar": "🎬 فيديو صغار 13", "en": "🎬 Kids Video 13"}, "price": 20, "files": ["BAACAgQAAxkBAAPcaoGEDuUocyh0oY8HX7gzuylCQHkAAqMmAAKDWAlQF6a9IWNmnYY9BA"]},
-    {"title": {"ar": "🎬 فيديو صغار 14", "en": "🎬 Kids Video 14"}, "price": 10, "files": ["BAACAgQAAxkBAAPeaoGEFh__YOZMpyQR0zeW9A2CTy0AAqQmAAKDWAlQznUfrhZe6Jk9BA"]},
-    {"title": {"ar": "🎬 فيديو صغار 15", "en": "🎬 Kids Video 15"}, "price": 10, "files": ["BAACAgQAAxkBAAPmojiEHnGVlF6BicCOMS5GqgukazIAAqYmAAKDWAlQ0V8G4lEDz2o9BA"]},
-    {"title": {"ar": "🎬 فيديو صغار 16", "en": "🎬 Kids Video 16"}, "price": 15, "files": ["BAACAgQAAxkBAAPkaoGEJodz2PK7F45B7O73km3tm1sAAqcmAAKDWAlQ1A41dgTSaic9BA"]}
+# 1️⃣ قائمة فيديوهات الصغار (16 فيديو)
+KIDS_VIDEOS = [
+    {"title": {"ar": "🎥 فيديو صغار 1", "en": "🎥 Kids Video 1"}, "price": 100, "files": ["BAACAgQAAxkBAAOTaoF4SmIIw3ue1_JiWTrwjLCKXL8AAnMmAAKDWAlQvtpTmD9RpCo9BA"]},
+    {"title": {"ar": "🎥 فيديو صغار 2", "en": "🎥 Kids Video 2"}, "price": 50, "files": ["BAACAgQAAxkBAAOZaoF4yfdx1YSkg7OQgcnOxmXRRWwAAnQmAAKDWAlQ2h1DDfXHybw9BA"]},
+    {"title": {"ar": "🎥 فيديو صغار 3", "en": "🎥 Kids Video 3"}, "price": 80, "files": ["BAACAgQAAxkBAAPIaoGAO8dW7pBN2wWZZjaVnTo7hzgAApQmAAKDWAlQ6t38o7hZhD89BA"]},
+    {"title": {"ar": "🎥 فيديو صغار 4", "en": "🎥 Kids Video 4"}, "price": 30, "files": ["BAACAgQAAxkBAAPKaoGAmVULFnPyK4KK7iEu-mTMGokAApUmAAKDWAlQYwaLhz0XVPg9BA"]},
+    {"title": {"ar": "🎥 فيديو صغار 5", "en": "🎥 Kids Video 5"}, "price": 10, "files": ["BAACAgQAAxkBAAPMaoGA30T8l98AARfuLcX_4aR1poopAAKWJgACg1gJUGxbIgjCo2mHPQQ"]},
+    {"title": {"ar": "🎥 فيديو صغار 6", "en": "🎥 Kids Video 6"}, "price": 20, "files": ["BAACAgQAAxkBAAPOaoGBTgONgOPCzUSVSbNmr_9L7fkAApcmAAKDWAlQt2rlRjg2HWw9BA"]},
+    {"title": {"ar": "🎥 فيديو صغار 7", "en": "🎥 Kids Video 7"}, "price": 5, "files": ["BAACAgQAAxkBAAPQaoGBpmpS01FKI76SBW8jWszZ0hUAApomAAKDWAlQBsuvYG2_evg9BA"]},
+    {"title": {"ar": "🎥 فيديو صغار 8", "en": "🎥 Kids Video 8"}, "price": 10, "files": ["BAACAgQAAxkBAAPSaoGCCHt1RWrujcuACizOoMtE0NwAApsmAAKDWAlQ2qYd_qGtm189BA"]},
+    {"title": {"ar": "🎥 فيديو صغار 9", "en": "🎥 Kids Video 9"}, "price": 20, "files": ["BAACAgQAAxkBAAPUaoGCQ4oxJO908uwGpnQC3GDhHbkAAp0mAAKDWAlQnX2lCf-XR_s9BA"]},
+    {"title": {"ar": "🎥 فيديو صغار 10", "en": "🎥 Kids Video 10"}, "price": 10, "files": ["BAACAgQAAxkBAAPWaoGCkKlsl7W2_tuRASdANbBJKb8AAp4mAAKDWAlQ00ZyCh2mx_g9BA"]},
+    {"title": {"ar": "🎥 فيديو صغار 11", "en": "🎥 Kids Video 11"}, "price": 15, "files": ["BAACAgQAAxkBAAPYaoGD_pFdFbIAAfm0D0SHYjLmU08UAAKhJgACg1gJUOF1tacNyCI9PQQ"]},
+    {"title": {"ar": "🎥 فيديو صغار 12", "en": "🎥 Kids Video 12"}, "price": 5, "files": ["BAACAgQAAxkBAAPaaoGEBldmtCGO61G3RvrDdvBxLSYAAqImAAKDWAlQGntSynT_5_s9BA"]},
+    {"title": {"ar": "🎥 فيديو صغار 13", "en": "🎥 Kids Video 13"}, "price": 20, "files": ["BAACAgQAAxkBAAPcaoGEDuUocyh0oY8HX7gzuylCQHkAAqMmAAKDWAlQF6a9IWNmnYY9BA"]},
+    {"title": {"ar": "🎥 فيديو صغار 14", "en": "🎥 Kids Video 14"}, "price": 10, "files": ["BAACAgQAAxkBAAPeaoGEFh__YOZMpyQR0zeW9A2CTy0AAqQmAAKDWAlQznUfrhZe6Jk9BA"]},
+    {"title": {"ar": "🎥 فيديو صغار 15", "en": "🎥 Kids Video 15"}, "price": 10, "files": ["BAACAgQAAxkBAAPmojiEHnGVlF6BicCOMS5GqgukazIAAqYmAAKDWAlQ0V8G4lEDz2o9BA"]},
+    {"title": {"ar": "🎥 فيديو صغار 16", "en": "🎥 Kids Video 16"}, "price": 15, "files": ["BAACAgQAAxkBAAPkaoGEJodz2PK7F45B7O73km3tm1sAAqcmAAKDWAlQ1A41dgTSaic9BA"]}
+]
+
+# 2️⃣ قائمة الفيديوهات العامة/الكبار (20 فيديو)
+ADULT_VIDEOS = [
+    {"title": {"ar": "🎥 فيديو 1", "en": "🎥 Video 1"}, "price": 20, "files": ["BAACAgQAAxkBAAICjGqCGrEiV7Izcz9qN8wqilrpYDaKAAIvJAACg1gRUNUAAd7MCAkY2T0E"]},
+    {"title": {"ar": "🎥 فيديو 2", "en": "🎥 Video 2"}, "price": 30, "files": ["BAACAgQAAxkBAAICjmqCGv6w7vwy0slR_wpKetrsIItfAAI2JAACg1gRUDumtqekuc_jPQQ"]},
+    {"title": {"ar": "🎥 فيديو 3", "en": "🎥 Video 3"}, "price": 30, "files": ["BAACAgQAAxkBAAICkmqCGwcQIbLuXYOhBsG5WGk9-DZHAAI4JAACg1gRUA6hr8VAQhNhPQQ"]},
+    {"title": {"ar": "🎥 فيديو 4", "en": "🎥 Video 4"}, "price": 15, "files": ["BAACAgQAAxkBAAIClGqCGwjTOVDW6JcINnjprFruZzFKAAI5JAACg1gRUFr7RMh-Pva9PQQ"]},
+    {"title": {"ar": "🎥 فيديو 5", "en": "🎥 Video 5"}, "price": 10, "files": ["BAACAgQAAxkBAAIClmqCGwk0XFlNgtEMLqDReTycfO55AAI6JAACg1gRUA6Ml4wRvatDPQQ"]},
+    {"title": {"ar": "🎥 فيديو 6", "en": "🎥 Video 6"}, "price": 10, "files": ["BAACAgQAAxkBAAICmGqCGw0kF29b-N__YWdBaOEwfkO6AAI7JAACg1gRUGKvHwQwquxSPQQ"]},
+    {"title": {"ar": "🎥 فيديو 7", "en": "🎥 Video 7"}, "price": 10, "files": ["BAACAgQAAxkBAAICmmqCGw8HhnajzrJ62J9SLWeuikHsAAI8JAACg1gRUEXlMsAAAV6-Hj0E"]},
+    {"title": {"ar": "🎥 فيديو 8", "en": "🎥 Video 8"}, "price": 20, "files": ["BAACAgQAAxkBAAICnGqCGxOlWNE36stky3rG9l97rbx-AAI9JAACg1gRUAeQZGssGCfoPQQ"]},
+    {"title": {"ar": "🎥 فيديو 9", "en": "🎥 Video 9"}, "price": 30, "files": ["BAACAgQAAxkBAAICnmqCGyHRdovyr7nqeVDYfJvlj1WiAAI-JAACg1gRUIqbMOzIwjG5PQQ"]},
+    {"title": {"ar": "🎥 فيديو 10", "en": "🎥 Video 10"}, "price": 15, "files": ["BAACAgQAAxkBAAICoGqCG5T0zPDmzzGSogW1S9-J8RKLAAJEJAACg1gRUKs5VbVhQMB7PQQ"]},
+    {"title": {"ar": "🎥 فيديو 11", "en": "🎥 Video 11"}, "price": 40, "files": ["BAACAgQAAxkBAAICqmqCHXlPoTXzpBDPjkCGDZYAAbed2QACTCQAAoNYEVAzldH9phiQaT0E"]},
+    {"title": {"ar": "🎥 فيديو 12", "en": "🎥 Video 12"}, "price": 20, "files": ["BAACAgQAAxkBAAICsGqCHfrAbyGNztcVOrHhZ642FakbAAJPJAACg1gRUFTogfBxSZLiPQQ"]},
+    {"title": {"ar": "🎥 فيديو 13", "en": "🎥 Video 13"}, "price": 25, "files": ["BAACAgQAAxkBAAICrmqCHeTeXMQn5Fjc7axu9MmZQ8l-AAJOJAACg1gRUIr1F7r_20dpPQQ"]},
+    {"title": {"ar": "🎥 فيديو 14", "en": "🎥 Video 14"}, "price": 20, "files": ["BAACAgQAAxkBAAICsmqCHo9E7S1jzZPxIsDNmNMwJ96EAAJSJAACg1gRUHVh4c_uVOYFPQQ"]},
+    {"title": {"ar": "🎥 فيديو 15", "en": "🎥 Video 15"}, "price": 15, "files": ["BAACAgQAAxkBAAICtmqCHpfJ5wU-lyw8I_bTaDnUJ8yyAAJTJAACg1gRUMFe-4swmKcfPQQ"]},
+    {"title": {"ar": "🎥 فيديو 16", "en": "🎥 Video 16"}, "price": 10, "files": ["BAACAgQAAxkBAAICuGqCHpqZMBCgnGh_f1gcDhDdwLWMAAJUJAACg1gRUA0pXQ_EkvgXPQQ"]},
+    {"title": {"ar": "🎥 فيديو 17", "en": "🎥 Video 17"}, "price": 10, "files": ["BAACAgQAAxkBAAICumqCHzYI4xqZ8aDq_F7S3r5Q1PKBAAJVJAACg1gRUHGM782ieIstPQQ"]},
+    {"title": {"ar": "🎥 فيديو 18", "en": "🎥 Video 18"}, "price": 20, "files": ["BAACAgQAAxkBAAICvGqCIA4thUBn8_TC2v0M6DBK_0vhAAJWJAACg1gRUKZWe0hL9uhWPQQ"]},
+    {"title": {"ar": "🎥 فيديو 19", "en": "🎥 Video 19"}, "price": 15, "files": ["BAACAgQAAxkBAAICvGqCIA4thUBn8_TC2v0M6DBK_0vhAAJWJAACg1gRUKZWe0hL9uhWPQQ"]},
+    {"title": {"ar": "🎥 فيديو 20", "en": "🎥 Video 20"}, "price": 50, "files": ["BAACAgQAAxkBAAICvmqCIB-ZRTKxp6Br91reeXDjjNUcAAJXJAACg1gRUM3PiU6chC91PQQ"]}
 ]
 
 TEXTS = {
     "ar": {
         "welcome": "✨ **أهلاً بك في البوت الخاص بنا!** ✨\n\nاختر من القائمة أدناه ما يناسبك:",
-        "btn_videos": "🎬 الفيديوهات المتاحة",
+        "btn_kids": "🎥 فيديوهات صغار",
+        "btn_adults": "🎥 فيديوهات كبار",
         "btn_discount": "🎁 عرض خاص 50%",
         "btn_lang": "🌐 تغيير اللغة / Change Language",
-        "videos_header": "🎬 **قائمة الفيديوهات المتاحة:**",
+        "kids_header": "🎥 **قائمة فيديوهات الصغار:**",
+        "adults_header": "🎥 **قائمة فيديوهات الكبار:**",
         "discount_info": "🎁 **عرض خاص 50%**\n\nاحصل على تخفيض **50%** على جميع الفيديوهات!\nكل ما عليك هو دعوة **20 شخصاً** عبر رابطك الخاص لتفعيل العرض تلقائياً.\n\n📊 **رصيدك الحالي:** {invites} / 20 دعوة.\n📌 **حالة العرض:** {status}\n\n🔗 **رابط الدعوة الخاص بك:**\n`{link}`",
         "status_active": "✅ تم تفعيل الخصم 50% بنجاح!",
         "status_pending": "⏳ متبقي لديك: {rem} دعوة لتفعيل الخصم.",
@@ -71,10 +95,12 @@ TEXTS = {
     },
     "en": {
         "welcome": "✨ **Welcome to Our Bot!** ✨\n\nPlease choose an option from below:",
-        "btn_videos": "🎬 Available Videos",
+        "btn_kids": "🎥 Kids Videos",
+        "btn_adults": "🎥 Adult Videos",
         "btn_discount": "🎁 Special Offer 50%",
         "btn_lang": "🌐 Change Language / تغيير اللغة",
-        "videos_header": "🎬 **Available Videos:**",
+        "kids_header": "🎥 **Kids Videos List:**",
+        "adults_header": "🎥 **Adult Videos List:**",
         "discount_info": "🎁 **Special Offer 50%**\n\nGet a **50% discount** on all videos!\nInvite **20 people** using your link to unlock the offer automatically.\n\n📊 **Current balance:** {invites} / 20 invites.\n📌 **Status:** {status}\n\n🔗 **Your referral link:**\n`{link}`",
         "status_active": "✅ 50% discount activated successfully!",
         "status_pending": "⏳ Remaining: {rem} invites to activate discount.",
@@ -141,11 +167,12 @@ def show_main_menu(chat_id, lang):
     t = TEXTS[lang]
     markup = types.InlineKeyboardMarkup(row_width=1)
     
-    btn_videos = types.InlineKeyboardButton(t["btn_videos"], callback_data="show_videos")
+    btn_kids = types.InlineKeyboardButton(t["btn_kids"], callback_data="show_kids")
+    btn_adults = types.InlineKeyboardButton(t["btn_adults"], callback_data="show_adults")
     btn_discount = types.InlineKeyboardButton(t["btn_discount"], callback_data="show_discount")
     btn_lang = types.InlineKeyboardButton(t["btn_lang"], callback_data="change_lang")
     
-    markup.add(btn_videos, btn_discount, btn_lang)
+    markup.add(btn_kids, btn_adults, btn_discount, btn_lang)
     bot.send_message(chat_id, t["welcome"], reply_markup=markup, parse_mode="Markdown")
 
 @bot.callback_query_handler(func=lambda call: call.data == "change_lang")
@@ -153,8 +180,9 @@ def change_lang_callback(call):
     bot.delete_message(call.message.chat.id, call.message.message_id)
     show_language_selection(call.message.chat.id)
 
-@bot.callback_query_handler(func=lambda call: call.data == "show_videos")
-def show_videos_callback(call):
+# 🎥 عرض قائمة فيديوهات الصغار
+@bot.callback_query_handler(func=lambda call: call.data == "show_kids")
+def show_kids_callback(call):
     user_id = str(call.message.chat.id)
     data = load_data()
     lang = data.get(user_id, {}).get("lang", "ar")
@@ -163,14 +191,32 @@ def show_videos_callback(call):
     
     markup = types.InlineKeyboardMarkup(row_width=1)
     
-    for i, item in enumerate(VIDEOS):
+    for i, item in enumerate(KIDS_VIDEOS):
         price = item['price'] // 2 if invites >= 20 else item['price']
         title = item['title'][lang]
-        markup.add(types.InlineKeyboardButton(f"{title} | ⭐ {price}", callback_data=f"buy_{i}"))
+        markup.add(types.InlineKeyboardButton(f"{title} | ⭐ {price}", callback_data=f"buy_kids_{i}"))
         
     markup.add(types.InlineKeyboardButton(t["btn_back"], callback_data="back_main"))
+    bot.edit_message_text(t["kids_header"], call.message.chat.id, call.message.message_id, reply_markup=markup, parse_mode="Markdown")
+
+# 🎥 عرض قائمة فيديوهات الكبار
+@bot.callback_query_handler(func=lambda call: call.data == "show_adults")
+def show_adults_callback(call):
+    user_id = str(call.message.chat.id)
+    data = load_data()
+    lang = data.get(user_id, {}).get("lang", "ar")
+    invites = data.get(user_id, {}).get("invites", 0)
+    t = TEXTS[lang]
     
-    bot.edit_message_text(t["videos_header"], call.message.chat.id, call.message.message_id, reply_markup=markup, parse_mode="Markdown")
+    markup = types.InlineKeyboardMarkup(row_width=1)
+    
+    for i, item in enumerate(ADULT_VIDEOS):
+        price = item['price'] // 2 if invites >= 20 else item['price']
+        title = item['title'][lang]
+        markup.add(types.InlineKeyboardButton(f"{title} | ⭐ {price}", callback_data=f"buy_adults_{i}"))
+        
+    markup.add(types.InlineKeyboardButton(t["btn_back"], callback_data="back_main"))
+    bot.edit_message_text(t["adults_header"], call.message.chat.id, call.message.message_id, reply_markup=markup, parse_mode="Markdown")
 
 @bot.callback_query_handler(func=lambda call: call.data == "show_discount")
 def show_discount_callback(call):
@@ -203,17 +249,22 @@ def back_main_callback(call):
     t = TEXTS[lang]
     
     markup = types.InlineKeyboardMarkup(row_width=1)
-    btn_videos = types.InlineKeyboardButton(t["btn_videos"], callback_data="show_videos")
+    btn_kids = types.InlineKeyboardButton(t["btn_kids"], callback_data="show_kids")
+    btn_adults = types.InlineKeyboardButton(t["btn_adults"], callback_data="show_adults")
     btn_discount = types.InlineKeyboardButton(t["btn_discount"], callback_data="show_discount")
     btn_lang = types.InlineKeyboardButton(t["btn_lang"], callback_data="change_lang")
-    markup.add(btn_videos, btn_discount, btn_lang)
+    markup.add(btn_kids, btn_adults, btn_discount, btn_lang)
     
     bot.edit_message_text(t["welcome"], call.message.chat.id, call.message.message_id, reply_markup=markup, parse_mode="Markdown")
 
+# 🛒 معالجة شراء فيديوهات الصغار والكبار
 @bot.callback_query_handler(func=lambda call: call.data.startswith("buy_"))
 def handle_payment(call):
-    index = int(call.data.split("_")[1])
-    item = VIDEOS[index]
+    parts = call.data.split("_")
+    category = parts[1]  # kids أو adults
+    index = int(parts[2])
+    
+    item = KIDS_VIDEOS[index] if category == "kids" else ADULT_VIDEOS[index]
     user_id = str(call.message.chat.id)
     
     data = load_data()
