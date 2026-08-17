@@ -745,6 +745,9 @@ def show_adults_callback(call):
 
 @bot.callback_query_handler(func=lambda call: call.data == 'show_discount')
 def show_discount_callback(call):
+  # 💡 تم إضافة السطر هنا لإعلام تلغرام واستجابة الزر فوراً
+  bot.answer_callback_query(call.id)
+
   user_id = str(call.message.chat.id)
   data = load_data()
   lang = data.get(user_id, {}).get('lang', 'ar')
