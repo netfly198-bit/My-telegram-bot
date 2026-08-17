@@ -1,7 +1,8 @@
+إليك الكود كاملاً ومحدثاً مع دمج نظام الدعوات الذكي (الذي يتحقق من أن المدعو استعمل البوت لتجنب الحسابات الوهمية)، ومنع إرسال الصور (Screenshots) مع السماح بإرسال الفيديوهات لجلب الـ file_id، مع الحفاظ على كامل بنية الفيديوهات وقوائم الأسعار واللغات لديك:
+from flask import Flask
 import json
 import os
 from threading import Thread
-from flask import Flask
 import telebot
 from telebot import types
 
@@ -37,7 +38,7 @@ def load_data():
 
 def save_data(data):
   with open(DATA_FILE, 'w') as f:
-    json.dump(data, f)
+    json.dump(data, f, ensure_ascii=False, indent=4)
 
 
 # --- 3️⃣ قوائم الفيديوهات ---
@@ -473,14 +474,17 @@ TEXTS = {
         'free_header': '🎁 قائمة الفيديوهات المجانية:',
         'discount_info': (
             '🎁 **عرض خاص 50%**\n\nاحصل على تخفيض 50% على جميع الفيديوهات!\nكل ما'
-            ' عليك هو دعوة 20 شخصاً عبر رابطك الخاص لتفعيل العرض تلقائياً.\n\n📊'
-            ' **رصيدك الحالي:** {invites} / 20 دعوة.\n📌 **حالة العرض:**'
-            ' {status}\n\n🔗 **رابط الدعوة الخاص بك:**\n{link}'
+            ' عليك هو دعوة 20 شخصاً حقيقياً عبر رابطك الخاص ودخولهم للبوت'
+            ' لتفعيل العرض تلقائياً.\n\n📊 **رصيدك الحالي:** {invites} / 20'
+            ' دعوة.\n📌 **حالة العرض:** {status}\n\n🔗 **رابط الدعوة الخاص'
+            ' بك:**\n{link}'
         ),
         'status_active': '✅ تم تفعيل الخصم 50% بنجاح!',
         'status_pending': '⏳ متبقي لديك: {rem} دعوة لتفعيل الخصم.',
         'btn_back': '🔙 العودة للقائمة الرئيسية',
-        'new_invite': '🎉 انضم شخص جديد عبر رابطك!',
+        'new_invite': (
+            '🎉 مبروك! لقد انضم شخص جديد عبر رابطك واستعمل البوت بنجاح!'
+        ),
         'block_photo': '⚠️ عذراً، إرسال الصور أو اللقطات (Screenshots) غير متاح.',
     },
     'en': {
@@ -497,15 +501,18 @@ TEXTS = {
         'free_header': '🎁 Free Videos List:',
         'discount_info': (
             '🎁 **Special Offer 50%**\n\nGet a 50% discount on all'
-            ' videos!\nInvite 20 people using your link to unlock the offer'
-            ' automatically.\n\n📊 **Current balance:** {invites} / 20'
-            ' invites.\n📌 **Status:** {status}\n\n🔗 **Your referral'
-            ' link:**\n{link}'
+            ' videos!\nInvite 20 real people using your link who use the bot'
+            ' to unlock the offer automatically.\n\n📊 **Current balance:**'
+            ' {invites} / 20 invites.\n📌 **Status:** {status}\n\n🔗 **Your'
+            ' referral link:**\n{link}'
         ),
         'status_active': '✅ 50% discount activated successfully!',
         'status_pending': '⏳ Remaining: {rem} invites to activate discount.',
         'btn_back': '🔙 Back to Main Menu',
-        'new_invite': '🎉 A new user joined using your link!',
+        'new_invite': (
+            '🎉 Congratulations! A new user joined via your link and used the'
+            ' bot successfully!'
+        ),
         'block_photo': '⚠️ Sorry, sending photos or screenshots is not allowed.',
     },
 }
@@ -513,7 +520,7 @@ TEXTS = {
 # --- 5️⃣ أوامر وأحداث البوت ---
 
 
-# 🎥 السماح بأخذ File ID من الفيديوهات لأي مستخدم
+# 🎥 السماح بأخذ File ID من الفيديوهات لجلب المعرف
 @bot.message_handler(content_types=['video'])
 def get_file_id(message):
   bot.reply_to(
@@ -523,13 +530,17 @@ def get_file_id(message):
   )
 
 
-# 🚫 حظر إرسال الصور واللقطات (Screenshots)
+# 🚫 حظر إرسال الصور واللقطات (Screenshots) فقط وحذفها
 @bot.message_handler(content_types=['photo'])
 def block_photos(message):
   user_id = str(message.chat.id)
   data = load_data()
   lang = data.get(user_id, {}).get('lang', 'ar') or 'ar'
-  bot.reply_to(message, TEXTS[lang]['block_photo'])
+  try:
+    bot.delete_message(message.chat.id, message.message_id)
+  except:
+    pass
+  bot.send_message(message.chat.id, TEXTS[lang]['block_photo'])
 
 
 @bot.message_handler(commands=['start'])
@@ -537,18 +548,33 @@ def start_cmd(message):
   user_id = str(message.chat.id)
   data = load_data()
 
-  if user_id not in data:
-    data[user_id] = {'invites': 0, 'referred_by': [], 'lang': None}
+  # إذا كان المستخدم جديداً كلياً ولم يقم بإنشاء حساب داخلي بعد
+  is_new_user = user_id not in data
+
+  if is_new_user:
+    data[user_id] = {
+        'invites': 0,
+        'referred_by': [],
+        'lang': None,
+        'has_counted_invite': False,
+    }
 
   args = message.text.split()
-  if len(args) > 1:
+  # التحقق من وجود رابط إحالة وأن المستخدم جديد ولم يتم احتسابه من قبل لتجنب التلاعب والحسابات الوهمية
+  if (
+      len(args) > 1
+      and is_new_user
+      and not data[user_id].get('has_counted_invite', False)
+  ):
     referrer_id = args[1]
-    if referrer_id != user_id:
-      if referrer_id not in data:
-        data[referrer_id] = {'invites': 0, 'referred_by': [], 'lang': 'ar'}
+    if referrer_id != user_id and referrer_id in data:
       if user_id not in data[referrer_id].get('referred_by', []):
         data[referrer_id]['invites'] += 1
         data[referrer_id]['referred_by'].append(user_id)
+        data[user_id]['has_counted_invite'] = (
+            True  # لتثبيت أن هذا الشخص تم احتسابه ولن يتكرر
+        )
+
         ref_lang = data[referrer_id].get('lang', 'ar') or 'ar'
         try:
           bot.send_message(referrer_id, TEXTS[ref_lang]['new_invite'])
@@ -556,7 +582,12 @@ def start_cmd(message):
           pass
 
   save_data(data)
-  show_language_selection(message.chat.id)
+
+  # إذا اختار لغة من قبل، نظهر القائمة مباشرة، وإلا نظهر اختيار اللغة
+  if data[user_id].get('lang'):
+    show_main_menu(message.chat.id, data[user_id]['lang'])
+  else:
+    show_language_selection(message.chat.id)
 
 
 def show_language_selection(chat_id):
@@ -585,12 +616,19 @@ def set_language(call):
   data = load_data()
 
   if user_id not in data:
-    data[user_id] = {'invites': 0, 'referred_by': []}
+    data[user_id] = {
+        'invites': 0,
+        'referred_by': [],
+        'has_counted_invite': False,
+    }
 
   data[user_id]['lang'] = lang
   save_data(data)
 
-  bot.delete_message(call.message.chat.id, call.message.message_id)
+  try:
+    bot.delete_message(call.message.chat.id, call.message.message_id)
+  except:
+    pass
   show_main_menu(call.message.chat.id, lang)
 
 
@@ -622,7 +660,10 @@ def show_main_menu(chat_id, lang):
 
 @bot.callback_query_handler(func=lambda call: call.data == 'change_lang')
 def change_lang_callback(call):
-  bot.delete_message(call.message.chat.id, call.message.message_id)
+  try:
+    bot.delete_message(call.message.chat.id, call.message.message_id)
+  except:
+    pass
   show_language_selection(call.message.chat.id)
 
 
@@ -866,3 +907,4 @@ if __name__ == '__main__':
   bot.remove_webhook()
   print('🚀 البوت يعمل الآن بنجاح...')
   bot.infinity_polling()
+
