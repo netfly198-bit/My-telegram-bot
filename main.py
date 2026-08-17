@@ -456,6 +456,7 @@ TEXTS = {
         'btn_kids': '🎥 فيديوهات صغار',
         'btn_adults': '🎥 فيديوهات كبار',
         'btn_free': '🎁 فيديوهات مجانية (25)',
+        'btn_discount': '🎁 عرض خاص 50%',
         'btn_lang': '🌐 تغيير اللغة / Change Language',
         'kids_header': '🎥 قائمة فيديوهات الصغار:',
         'adults_header': '🎥 قائمة فيديوهات الكبار:',
@@ -468,6 +469,7 @@ TEXTS = {
         'btn_kids': '🎥 Kids Videos',
         'btn_adults': '🎥 Adult Videos',
         'btn_free': '🎁 Free Videos (25)',
+        'btn_discount': '🎁 Special Offer 50%',
         'btn_lang': '🌐 Change Language / تغيير اللغة',
         'kids_header': '🎥 Kids Videos List:',
         'adults_header': '🎥 Adult Videos List:',
@@ -498,13 +500,29 @@ def block_photos(message):
 
 @bot.message_handler(commands=['start'])
 def start_cmd(message):
-  user_id = str(message.chat.id)
+  user_id = str(message.from_user.id)
+  args = message.text.split()
   data = load_data()
 
   if user_id not in data:
     data[user_id] = {
         'lang': None,
+        'invited_count': 0,
+        'referred_by': None,
+        'discount_active': False
     }
+    
+    # التحقق من رابط الدعوة (أن شخصاً دعاه واستخدم البوت)
+    if len(args) > 1:
+      referrer_id = args[1]
+      if referrer_id != user_id and referrer_id in data:
+        data[user_id]['referred_by'] = referrer_id
+        data[referrer_id]['invited_count'] = data[referrer_id].get('invited_count', 0) + 1
+        
+        # تفعيل الخصم تلقائياً إذا وصل إلى 20 دعوة
+        if data[referrer_id]['invited_count'] >= 20:
+          data[referrer_id]['discount_active'] = True
+          
     save_data(data)
 
   if data[user_id].get('lang'):
@@ -533,7 +551,7 @@ def set_language(call):
   data = load_data()
 
   if user_id not in data:
-    data[user_id] = {}
+    data[user_id] = {'invited_count': 0, 'discount_active': False}
 
   data[user_id]['lang'] = lang
   save_data(data)
@@ -546,14 +564,26 @@ def set_language(call):
 
 def show_main_menu(chat_id, lang):
   t = TEXTS[lang]
+  user_id = str(chat_id)
+  data = load_data()
+  user_data = data.get(user_id, {})
+  
   markup = types.InlineKeyboardMarkup(row_width=1)
 
   btn_kids = types.InlineKeyboardButton(t['btn_kids'], callback_data='show_kids')
   btn_adults = types.InlineKeyboardButton(t['btn_adults'], callback_data='show_adults')
   btn_free = types.InlineKeyboardButton(t['btn_free'], callback_data='show_free')
-  btn_lang = types.InlineKeyboardButton(t['btn_lang'], callback_data='change_lang')
+  
+  markup.add(btn_kids, btn_adults, btn_free)
 
-  markup.add(btn_kids, btn_adults, btn_free, btn_lang)
+  # إظهار زر العرض الخاص (الخصم) فقط إذا كان مفعلاً
+  if user_data.get('discount_active', False):
+    btn_discount = types.InlineKeyboardButton(t['btn_discount'], callback_data='show_discount')
+    markup.add(btn_discount)
+
+  btn_lang = types.InlineKeyboardButton(t['btn_lang'], callback_data='change_lang')
+  markup.add(btn_lang)
+
   bot.send_message(chat_id, t['welcome'], reply_markup=markup, parse_mode='Markdown')
 
 @bot.callback_query_handler(func=lambda call: call.data == 'change_lang')
@@ -646,13 +676,17 @@ def show_kids_callback(call):
   data = load_data()
   lang = data.get(user_id, {}).get('lang', 'ar') or 'ar'
   t = TEXTS[lang]
+  discount = data.get(user_id, {}).get('discount_active', False)
 
   markup = types.InlineKeyboardMarkup(row_width=1)
 
   for i, item in enumerate(KIDS_VIDEOS):
-    price = item['price']
+    original_price = item['price']
+    # تطبيق خصم 50% إذا كان العرض مفعل للمستخدم
+    price = int(original_price * 0.5) if discount else original_price
     title = item['title'][lang]
-    markup.add(types.InlineKeyboardButton(f'{title} | ⭐ {price}', callback_data=f'buy_kids_{i}'))
+    price_text = f'⭐ {price} (خصم 50%)' if discount else f'⭐ {original_price}'
+    markup.add(types.InlineKeyboardButton(f'{title} | {price_text}', callback_data=f'buy_kids_{i}'))
 
   markup.add(types.InlineKeyboardButton(t['btn_back'], callback_data='back_main'))
   
@@ -678,13 +712,17 @@ def show_adults_callback(call):
   data = load_data()
   lang = data.get(user_id, {}).get('lang', 'ar') or 'ar'
   t = TEXTS[lang]
+  discount = data.get(user_id, {}).get('discount_active', False)
 
   markup = types.InlineKeyboardMarkup(row_width=1)
 
   for i, item in enumerate(ADULT_VIDEOS):
-    price = item['price']
+    original_price = item['price']
+    # تطبيق خصم 50% إذا كان العرض مفعل للمستخدم
+    price = int(original_price * 0.5) if discount else original_price
     title = item['title'][lang]
-    markup.add(types.InlineKeyboardButton(f'{title} | ⭐ {price}', callback_data=f'buy_adults_{i}'))
+    price_text = f'⭐ {price} (خصم 50%)' if discount else f'⭐ {original_price}'
+    markup.add(types.InlineKeyboardButton(f'{title} | {price_text}', callback_data=f'buy_adults_{i}'))
 
   markup.add(types.InlineKeyboardButton(t['btn_back'], callback_data='back_main'))
   
@@ -699,6 +737,40 @@ def show_adults_callback(call):
   except Exception as e:
     print(f"Error in show_adults: {e}")
 
+@bot.callback_query_handler(func=lambda call: call.data == 'show_discount')
+def show_discount_callback(call):
+  try:
+    bot.answer_callback_query(call.id)
+  except:
+    pass
+  user_id = str(call.message.chat.id)
+  data = load_data()
+  lang = data.get(user_id, {}).get('lang', 'ar') or 'ar'
+  t = TEXTS[lang]
+
+  bot_info = bot.get_me()
+  referral_link = f"https://t.me/{bot_info.username}?start={user_id}"
+  invited_count = data.get(user_id, {}).get('invited_count', 0)
+
+  if lang == 'ar':
+    msg = f"🎉 **مبروك! لقد حصلت على خصم 50%**\n\nعدد الأشخاص الذين دعوتهم واستخدموا البوت: `{invited_count}/20`\n\n🔗 رابط الدعوة الخاص بك:\n`{referral_link}`\n\nشارك الرابط مع أصدقائك لاستخدام البوت والاستمتاع بالأسعار المخفضة!"
+  else:
+    msg = f"🎉 **Congratulations! You unlocked a 50% discount**\n\nInvited users who used the bot: `{invited_count}/20`\n\n🔗 Your Referral Link:\n`{referral_link}`\n\nShare this link with your friends to enjoy discounted prices!"
+
+  markup = types.InlineKeyboardMarkup()
+  markup.add(types.InlineKeyboardButton(t['btn_back'], callback_data='back_main'))
+
+  try:
+    bot.edit_message_text(
+        msg,
+        call.message.chat.id,
+        call.message.message_id,
+        reply_markup=markup,
+        parse_mode='Markdown',
+    )
+  except Exception as e:
+    print(f"Error in show_discount: {e}")
+
 @bot.callback_query_handler(func=lambda call: call.data == 'back_main')
 def back_main_callback(call):
   try:
@@ -710,13 +782,21 @@ def back_main_callback(call):
   data = load_data()
   lang = data.get(user_id, {}).get('lang', 'ar') or 'ar'
   t = TEXTS[lang]
+  user_data = data.get(user_id, {})
 
   markup = types.InlineKeyboardMarkup(row_width=1)
   btn_kids = types.InlineKeyboardButton(t['btn_kids'], callback_data='show_kids')
   btn_adults = types.InlineKeyboardButton(t['btn_adults'], callback_data='show_adults')
   btn_free = types.InlineKeyboardButton(t['btn_free'], callback_data='show_free')
+  
+  markup.add(btn_kids, btn_adults, btn_free)
+
+  if user_data.get('discount_active', False):
+    btn_discount = types.InlineKeyboardButton(t['btn_discount'], callback_data='show_discount')
+    markup.add(btn_discount)
+
   btn_lang = types.InlineKeyboardButton(t['btn_lang'], callback_data='change_lang')
-  markup.add(btn_kids, btn_adults, btn_free, btn_lang)
+  markup.add(btn_lang)
 
   try:
     bot.edit_message_text(
@@ -741,8 +821,10 @@ def handle_payment(call):
 
     data = load_data()
     lang = data.get(user_id, {}).get('lang', 'ar') or 'ar'
+    discount = data.get(user_id, {}).get('discount_active', False)
 
-    price = item['price']
+    original_price = item['price']
+    price = int(original_price * 0.5) if discount else original_price
     title = item['title'][lang]
 
     bot.answer_callback_query(call.id, f'السعر المطلوب: {price} نجوم')
