@@ -1,4 +1,3 @@
-إليك الكود كاملاً ومحدثاً مع دمج نظام الدعوات الذكي (الذي يتحقق من أن المدعو استعمل البوت لتجنب الحسابات الوهمية)، ومنع إرسال الصور (Screenshots) مع السماح بإرسال الفيديوهات لجلب الـ file_id، مع الحفاظ على كامل بنية الفيديوهات وقوائم الأسعار واللغات لديك:
 from flask import Flask
 import json
 import os
@@ -43,7 +42,6 @@ def save_data(data):
 
 # --- 3️⃣ قوائم الفيديوهات ---
 
-# 🎁 قائمة الفيديوهات المجانية (25 فيديو)
 FREE_VIDEOS = [
     {
         'title': {'ar': '🎥 فيديو مجاني 1', 'en': '🎥 Free Video 1'},
@@ -197,7 +195,6 @@ FREE_VIDEOS = [
     },
 ]
 
-# 👶 قائمة فيديوهات الصغار (16 فيديو)
 KIDS_VIDEOS = [
     {
         'title': {'ar': '🎥 فيديو صغار 1', 'en': '🎥 Kids Video 1'},
@@ -313,7 +310,6 @@ KIDS_VIDEOS = [
     },
 ]
 
-# 🧑 قائمة الفيديوهات العامة/الكبار (20 فيديو)
 ADULT_VIDEOS = [
     {
         'title': {'ar': '🎥 فيديو 1', 'en': '🎥 Video 1'},
@@ -457,7 +453,6 @@ ADULT_VIDEOS = [
     },
 ]
 
-# --- 4️⃣ القواميس والنصوص ---
 TEXTS = {
     'ar': {
         'welcome': (
@@ -517,10 +512,7 @@ TEXTS = {
     },
 }
 
-# --- 5️⃣ أوامر وأحداث البوت ---
 
-
-# 🎥 السماح بأخذ File ID من الفيديوهات لجلب المعرف
 @bot.message_handler(content_types=['video'])
 def get_file_id(message):
   bot.reply_to(
@@ -530,7 +522,6 @@ def get_file_id(message):
   )
 
 
-# 🚫 حظر إرسال الصور واللقطات (Screenshots) فقط وحذفها
 @bot.message_handler(content_types=['photo'])
 def block_photos(message):
   user_id = str(message.chat.id)
@@ -548,7 +539,6 @@ def start_cmd(message):
   user_id = str(message.chat.id)
   data = load_data()
 
-  # إذا كان المستخدم جديداً كلياً ولم يقم بإنشاء حساب داخلي بعد
   is_new_user = user_id not in data
 
   if is_new_user:
@@ -560,7 +550,6 @@ def start_cmd(message):
     }
 
   args = message.text.split()
-  # التحقق من وجود رابط إحالة وأن المستخدم جديد ولم يتم احتسابه من قبل لتجنب التلاعب والحسابات الوهمية
   if (
       len(args) > 1
       and is_new_user
@@ -571,9 +560,7 @@ def start_cmd(message):
       if user_id not in data[referrer_id].get('referred_by', []):
         data[referrer_id]['invites'] += 1
         data[referrer_id]['referred_by'].append(user_id)
-        data[user_id]['has_counted_invite'] = (
-            True  # لتثبيت أن هذا الشخص تم احتسابه ولن يتكرر
-        )
+        data[user_id]['has_counted_invite'] = True
 
         ref_lang = data[referrer_id].get('lang', 'ar') or 'ar'
         try:
@@ -583,7 +570,6 @@ def start_cmd(message):
 
   save_data(data)
 
-  # إذا اختار لغة من قبل، نظهر القائمة مباشرة، وإلا نظهر اختيار اللغة
   if data[user_id].get('lang'):
     show_main_menu(message.chat.id, data[user_id]['lang'])
   else:
@@ -667,7 +653,6 @@ def change_lang_callback(call):
   show_language_selection(call.message.chat.id)
 
 
-# 🎁 عرض قائمة الفيديوهات المجانية الـ 25
 @bot.callback_query_handler(func=lambda call: call.data == 'show_free')
 def show_free_callback(call):
   user_id = str(call.message.chat.id)
@@ -697,7 +682,6 @@ def show_free_callback(call):
   )
 
 
-# 🎁 إرسال الفيديو المجاني المحدد
 @bot.callback_query_handler(func=lambda call: call.data.startswith('get_free_'))
 def handle_free_video(call):
   index = int(call.data.split('_')[2])
@@ -733,7 +717,6 @@ def handle_free_video(call):
     )
 
 
-# 🎥 عرض قائمة فيديوهات الصغار
 @bot.callback_query_handler(func=lambda call: call.data == 'show_kids')
 def show_kids_callback(call):
   user_id = str(call.message.chat.id)
@@ -765,7 +748,6 @@ def show_kids_callback(call):
   )
 
 
-# 🎥 عرض قائمة فيديوهات الكبار
 @bot.callback_query_handler(func=lambda call: call.data == 'show_adults')
 def show_adults_callback(call):
   user_id = str(call.message.chat.id)
@@ -797,7 +779,6 @@ def show_adults_callback(call):
   )
 
 
-# 🎁 عرض الخاص
 @bot.callback_query_handler(func=lambda call: call.data == 'show_discount')
 def show_discount_callback(call):
   bot.answer_callback_query(call.id)
@@ -868,7 +849,6 @@ def back_main_callback(call):
   )
 
 
-# 🛒 معالجة شراء فيديوهات الصغار والكبار
 @bot.callback_query_handler(func=lambda call: call.data.startswith('buy_'))
 def handle_payment(call):
   parts = call.data.split('_')
@@ -907,4 +887,3 @@ if __name__ == '__main__':
   bot.remove_webhook()
   print('🚀 البوت يعمل الآن بنجاح...')
   bot.infinity_polling()
-
