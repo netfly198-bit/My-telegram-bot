@@ -558,6 +558,11 @@ def show_language_selection(chat_id):
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('set_lang_'))
 def set_language(call):
+  try:
+    bot.answer_callback_query(call.id)
+  except:
+    pass
+    
   lang = call.data.split('_')[2]
   user_id = str(call.message.chat.id)
   data = load_data()
@@ -594,6 +599,10 @@ def show_main_menu(chat_id, lang):
 @bot.callback_query_handler(func=lambda call: call.data == 'change_lang')
 def change_lang_callback(call):
   try:
+    bot.answer_callback_query(call.id)
+  except:
+    pass
+  try:
     bot.delete_message(call.message.chat.id, call.message.message_id)
   except:
     pass
@@ -601,6 +610,11 @@ def change_lang_callback(call):
 
 @bot.callback_query_handler(func=lambda call: call.data == 'show_free')
 def show_free_callback(call):
+  try:
+    bot.answer_callback_query(call.id)
+  except:
+    pass
+    
   user_id = str(call.message.chat.id)
   data = load_data()
   lang = data.get(user_id, {}).get('lang', 'ar') or 'ar'
@@ -613,16 +627,25 @@ def show_free_callback(call):
     markup.add(types.InlineKeyboardButton(f'{title} | 🆓 مجاناً', callback_data=f'get_free_{i}'))
 
   markup.add(types.InlineKeyboardButton(t['btn_back'], callback_data='back_main'))
-  bot.edit_message_text(
-      t['free_header'],
-      call.message.chat.id,
-      call.message.message_id,
-      reply_markup=markup,
-      parse_mode='Markdown',
-  )
+  
+  try:
+    bot.edit_message_text(
+        t['free_header'],
+        call.message.chat.id,
+        call.message.message_id,
+        reply_markup=markup,
+        parse_mode='Markdown',
+    )
+  except Exception as e:
+    print(f"Error in show_free: {e}")
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('get_free_'))
 def handle_free_video(call):
+  try:
+    bot.answer_callback_query(call.id, 'جاري إرسال الفيديو...')
+  except:
+    pass
+    
   index = int(call.data.split('_')[2])
   item = FREE_VIDEOS[index]
   user_id = str(call.message.chat.id)
@@ -630,8 +653,6 @@ def handle_free_video(call):
   data = load_data()
   lang = data.get(user_id, {}).get('lang', 'ar') or 'ar'
   title = item['title'][lang]
-
-  bot.answer_callback_query(call.id, 'جاري إرسال الفيديو...')
 
   file_id = item['files'][0]
   caption = (
@@ -647,7 +668,8 @@ def handle_free_video(call):
         caption=caption,
         parse_mode='Markdown',
     )
-  except Exception:
+  except Exception as e:
+    print(f"Error sending free video: {e}")
     bot.send_message(
         call.message.chat.id,
         '⚠️ عذراً، تعذر إرسال الفيديو.' if lang == 'ar' else '⚠️ Sorry, failed to send video.',
@@ -655,6 +677,11 @@ def handle_free_video(call):
 
 @bot.callback_query_handler(func=lambda call: call.data == 'show_kids')
 def show_kids_callback(call):
+  try:
+    bot.answer_callback_query(call.id)
+  except:
+    pass
+    
   user_id = str(call.message.chat.id)
   data = load_data()
   lang = data.get(user_id, {}).get('lang', 'ar') or 'ar'
@@ -669,16 +696,25 @@ def show_kids_callback(call):
     markup.add(types.InlineKeyboardButton(f'{title} | ⭐ {price}', callback_data=f'buy_kids_{i}'))
 
   markup.add(types.InlineKeyboardButton(t['btn_back'], callback_data='back_main'))
-  bot.edit_message_text(
-      t['kids_header'],
-      call.message.chat.id,
-      call.message.message_id,
-      reply_markup=markup,
-      parse_mode='Markdown',
-  )
+  
+  try:
+    bot.edit_message_text(
+        t['kids_header'],
+        call.message.chat.id,
+        call.message.message_id,
+        reply_markup=markup,
+        parse_mode='Markdown',
+    )
+  except Exception as e:
+    print(f"Error in show_kids: {e}")
 
 @bot.callback_query_handler(func=lambda call: call.data == 'show_adults')
 def show_adults_callback(call):
+  try:
+    bot.answer_callback_query(call.id)
+  except:
+    pass
+    
   user_id = str(call.message.chat.id)
   data = load_data()
   lang = data.get(user_id, {}).get('lang', 'ar') or 'ar'
@@ -693,17 +729,24 @@ def show_adults_callback(call):
     markup.add(types.InlineKeyboardButton(f'{title} | ⭐ {price}', callback_data=f'buy_adults_{i}'))
 
   markup.add(types.InlineKeyboardButton(t['btn_back'], callback_data='back_main'))
-  bot.edit_message_text(
-      t['adults_header'],
-      call.message.chat.id,
-      call.message.message_id,
-      reply_markup=markup,
-      parse_mode='Markdown',
-  )
+  
+  try:
+    bot.edit_message_text(
+        t['adults_header'],
+        call.message.chat.id,
+        call.message.message_id,
+        reply_markup=markup,
+        parse_mode='Markdown',
+    )
+  except Exception as e:
+    print(f"Error in show_adults: {e}")
 
 @bot.callback_query_handler(func=lambda call: call.data == 'show_discount')
 def show_discount_callback(call):
-  bot.answer_callback_query(call.id)
+  try:
+    bot.answer_callback_query(call.id)
+  except:
+    pass
 
   user_id = str(call.message.chat.id)
   data = load_data()
@@ -724,16 +767,24 @@ def show_discount_callback(call):
   markup = types.InlineKeyboardMarkup(row_width=1)
   markup.add(types.InlineKeyboardButton(t['btn_back'], callback_data='back_main'))
 
-  bot.edit_message_text(
-      info_text,
-      call.message.chat.id,
-      call.message.message_id,
-      reply_markup=markup,
-      parse_mode='Markdown',
-  )
+  try:
+    bot.edit_message_text(
+        info_text,
+        call.message.chat.id,
+        call.message.message_id,
+        reply_markup=markup,
+        parse_mode='Markdown',
+    )
+  except Exception as e:
+    print(f"Error in show_discount: {e}")
 
 @bot.callback_query_handler(func=lambda call: call.data == 'back_main')
 def back_main_callback(call):
+  try:
+    bot.answer_callback_query(call.id)
+  except:
+    pass
+    
   user_id = str(call.message.chat.id)
   data = load_data()
   lang = data.get(user_id, {}).get('lang', 'ar') or 'ar'
@@ -747,43 +798,46 @@ def back_main_callback(call):
   btn_lang = types.InlineKeyboardButton(t['btn_lang'], callback_data='change_lang')
   markup.add(btn_kids, btn_adults, btn_free, btn_discount, btn_lang)
 
-  bot.edit_message_text(
-      t['welcome'],
-      call.message.chat.id,
-      call.message.message_id,
-      reply_markup=markup,
-      parse_mode='Markdown',
-  )
+  try:
+    bot.edit_message_text(
+        t['welcome'],
+        call.message.chat.id,
+        call.message.message_id,
+        reply_markup=markup,
+        parse_mode='Markdown',
+    )
+  except Exception as e:
+    print(f"Error in back_main: {e}")
 
 @bot.callback_query_handler(func=lambda call: call.data.startswith('buy_'))
 def handle_payment(call):
-  parts = call.data.split('_')
-  category = parts[1]
-  index = int(parts[2])
-
-  item = KIDS_VIDEOS[index] if category == 'kids' else ADULT_VIDEOS[index]
-  user_id = str(call.message.chat.id)
-
-  data = load_data()
-  lang = data.get(user_id, {}).get('lang', 'ar') or 'ar'
-  invites = data.get(user_id, {}).get('invites', 0)
-
-  price = item['price'] // 2 if invites >= 20 else item['price']
-  title = item['title'][lang]
-
-  print(f"DEBUG: User={user_id} | Invites={invites} | FinalPrice={price}")
-
-  bot.answer_callback_query(call.id, f'السعر المطلوب: {price} نجوم')
-
-  media_list = [types.InputMediaVideo(media=fid) for fid in item['files']]
-
-  caption = (
-      f'✨ شكراً لثقتك!\nاستمتع بمشاهدة: {title}\n💰 السعر المدفوع: {price} نجوم.'
-      if lang == 'ar'
-      else f'✨ Thank you!\nEnjoy watching: {title}\n💰 Paid Price: {price} Stars.'
-  )
-
   try:
+    parts = call.data.split('_')
+    category = parts[1]
+    index = int(parts[2])
+
+    item = KIDS_VIDEOS[index] if category == 'kids' else ADULT_VIDEOS[index]
+    user_id = str(call.message.chat.id)
+
+    data = load_data()
+    lang = data.get(user_id, {}).get('lang', 'ar') or 'ar'
+    invites = data.get(user_id, {}).get('invites', 0)
+
+    price = item['price'] // 2 if invites >= 20 else item['price']
+    title = item['title'][lang]
+
+    print(f"DEBUG: User={user_id} | Invites={invites} | FinalPrice={price}")
+
+    bot.answer_callback_query(call.id, f'السعر المطلوب: {price} نجوم')
+
+    media_list = [types.InputMediaVideo(media=fid) for fid in item['files']]
+
+    caption = (
+        f'✨ شكراً لثقتك!\nاستمتع بمشاهدة: {title}\n💰 السعر المدفوع: {price} نجوم.'
+        if lang == 'ar'
+        else f'✨ Thank you!\nEnjoy watching: {title}\n💰 Paid Price: {price} Stars.'
+    )
+
     bot.send_paid_media(
         chat_id=call.message.chat.id,
         star_count=price,
@@ -791,8 +845,11 @@ def handle_payment(call):
         caption=caption,
     )
   except Exception as e:
-    print(f"Error in send_paid_media: {e}")
-    bot.send_message(call.message.chat.id, "حدث خطأ أثناء الشراء. يرجى المحاولة لاحقاً.")
+    print(f"Error in handle_payment: {e}")
+    try:
+      bot.answer_callback_query(call.id, "حدث خطأ ما، يجدر المحاولة لاحقاً.")
+    except:
+      pass
 
 if __name__ == '__main__':
   bot.remove_webhook()
