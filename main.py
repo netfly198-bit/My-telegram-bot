@@ -456,16 +456,11 @@ TEXTS = {
         'btn_kids': '🎥 فيديوهات صغار',
         'btn_adults': '🎥 فيديوهات كبار',
         'btn_free': '🎁 فيديوهات مجانية (25)',
-        'btn_discount': '🎁 عرض خاص 50%',
         'btn_lang': '🌐 تغيير اللغة / Change Language',
         'kids_header': '🎥 قائمة فيديوهات الصغار:',
         'adults_header': '🎥 قائمة فيديوهات الكبار:',
         'free_header': '🎁 قائمة الفيديوهات المجانية:',
-        'discount_info': '🎁 **عرض خاص 50%**\n\nاحصل على تخفيض 50% على جميع الفيديوهات!\nكل ما عليك هو دعوة 20 شخصاً حقيقياً عبر رابطك الخاص ودخولهم للبوت لتفعيل العرض تلقائياً.\n\n📊 **رصيدك الحالي:** {invites} / 20 دعوة.\n📌 **حالة العرض:** {status}\n\n🔗 **رابط الدعوة الخاص بك:**\n{link}',
-        'status_active': '✅ تم تفعيل الخصم 50% بنجاح!',
-        'status_pending': '⏳ متبقي لديك: {rem} دعوة لتفعيل الخصم.',
         'btn_back': '🔙 العودة للقائمة الرئيسية',
-        'new_invite': '🎉 مبروك! لقد انضم شخص جديد عبر رابطك واستعمل البوت بنجاح!',
         'block_photo': '⚠️ عذراً، إرسال الصور أو اللقطات (Screenshots) غير متاح.',
     },
     'en': {
@@ -473,16 +468,11 @@ TEXTS = {
         'btn_kids': '🎥 Kids Videos',
         'btn_adults': '🎥 Adult Videos',
         'btn_free': '🎁 Free Videos (25)',
-        'btn_discount': '🎁 Special Offer 50%',
         'btn_lang': '🌐 Change Language / تغيير اللغة',
         'kids_header': '🎥 Kids Videos List:',
         'adults_header': '🎥 Adult Videos List:',
         'free_header': '🎁 Free Videos List:',
-        'discount_info': '🎁 **Special Offer 50%**\n\nGet a 50% discount on all videos!\nInvite 20 real people using your link who use the bot to unlock the offer automatically.\n\n📊 **Current balance:** {invites} / 20 invites.\n📌 **Status:** {status}\n\n🔗 **Your referral link:**\n{link}',
-        'status_active': '✅ 50% discount activated successfully!',
-        'status_pending': '⏳ Remaining: {rem} invites to activate discount.',
         'btn_back': '🔙 Back to Main Menu',
-        'new_invite': '🎉 Congratulations! A new user joined via your link and used the bot successfully!',
         'block_photo': '⚠️ Sorry, sending photos or screenshots is not allowed.',
     },
 }
@@ -511,36 +501,11 @@ def start_cmd(message):
   user_id = str(message.chat.id)
   data = load_data()
 
-  is_new_user = user_id not in data
-
-  if is_new_user:
+  if user_id not in data:
     data[user_id] = {
-        'invites': 0,
-        'referred_by': [],
         'lang': None,
-        'has_counted_invite': False,
     }
-
-  args = message.text.split()
-  if (
-      len(args) > 1
-      and is_new_user
-      and not data[user_id].get('has_counted_invite', False)
-  ):
-    referrer_id = args[1]
-    if referrer_id != user_id and referrer_id in data:
-      if user_id not in data[referrer_id].get('referred_by', []):
-        data[referrer_id]['invites'] += 1
-        data[referrer_id]['referred_by'].append(user_id)
-        data[user_id]['has_counted_invite'] = True
-
-        ref_lang = data[referrer_id].get('lang', 'ar') or 'ar'
-        try:
-          bot.send_message(referrer_id, TEXTS[ref_lang]['new_invite'])
-        except:
-          pass
-
-  save_data(data)
+    save_data(data)
 
   if data[user_id].get('lang'):
     show_main_menu(message.chat.id, data[user_id]['lang'])
@@ -568,11 +533,7 @@ def set_language(call):
   data = load_data()
 
   if user_id not in data:
-    data[user_id] = {
-        'invites': 0,
-        'referred_by': [],
-        'has_counted_invite': False,
-    }
+    data[user_id] = {}
 
   data[user_id]['lang'] = lang
   save_data(data)
@@ -590,10 +551,9 @@ def show_main_menu(chat_id, lang):
   btn_kids = types.InlineKeyboardButton(t['btn_kids'], callback_data='show_kids')
   btn_adults = types.InlineKeyboardButton(t['btn_adults'], callback_data='show_adults')
   btn_free = types.InlineKeyboardButton(t['btn_free'], callback_data='show_free')
-  btn_discount = types.InlineKeyboardButton(t['btn_discount'], callback_data='show_discount')
   btn_lang = types.InlineKeyboardButton(t['btn_lang'], callback_data='change_lang')
 
-  markup.add(btn_kids, btn_adults, btn_free, btn_discount, btn_lang)
+  markup.add(btn_kids, btn_adults, btn_free, btn_lang)
   bot.send_message(chat_id, t['welcome'], reply_markup=markup, parse_mode='Markdown')
 
 @bot.callback_query_handler(func=lambda call: call.data == 'change_lang')
@@ -685,5 +645,130 @@ def show_kids_callback(call):
   user_id = str(call.message.chat.id)
   data = load_data()
   lang = data.get(user_id, {}).get('lang', 'ar') or 'ar'
-  invites = data.get(user_id, {}).get('invites', 0)
-  t =
+  t = TEXTS[lang]
+
+  markup = types.InlineKeyboardMarkup(row_width=1)
+
+  for i, item in enumerate(KIDS_VIDEOS):
+    price = item['price']
+    title = item['title'][lang]
+    markup.add(types.InlineKeyboardButton(f'{title} | ⭐ {price}', callback_data=f'buy_kids_{i}'))
+
+  markup.add(types.InlineKeyboardButton(t['btn_back'], callback_data='back_main'))
+  
+  try:
+    bot.edit_message_text(
+        t['kids_header'],
+        call.message.chat.id,
+        call.message.message_id,
+        reply_markup=markup,
+        parse_mode='Markdown',
+    )
+  except Exception as e:
+    print(f"Error in show_kids: {e}")
+
+@bot.callback_query_handler(func=lambda call: call.data == 'show_adults')
+def show_adults_callback(call):
+  try:
+    bot.answer_callback_query(call.id)
+  except:
+    pass
+    
+  user_id = str(call.message.chat.id)
+  data = load_data()
+  lang = data.get(user_id, {}).get('lang', 'ar') or 'ar'
+  t = TEXTS[lang]
+
+  markup = types.InlineKeyboardMarkup(row_width=1)
+
+  for i, item in enumerate(ADULT_VIDEOS):
+    price = item['price']
+    title = item['title'][lang]
+    markup.add(types.InlineKeyboardButton(f'{title} | ⭐ {price}', callback_data=f'buy_adults_{i}'))
+
+  markup.add(types.InlineKeyboardButton(t['btn_back'], callback_data='back_main'))
+  
+  try:
+    bot.edit_message_text(
+        t['adults_header'],
+        call.message.chat.id,
+        call.message.message_id,
+        reply_markup=markup,
+        parse_mode='Markdown',
+    )
+  except Exception as e:
+    print(f"Error in show_adults: {e}")
+
+@bot.callback_query_handler(func=lambda call: call.data == 'back_main')
+def back_main_callback(call):
+  try:
+    bot.answer_callback_query(call.id)
+  except:
+    pass
+    
+  user_id = str(call.message.chat.id)
+  data = load_data()
+  lang = data.get(user_id, {}).get('lang', 'ar') or 'ar'
+  t = TEXTS[lang]
+
+  markup = types.InlineKeyboardMarkup(row_width=1)
+  btn_kids = types.InlineKeyboardButton(t['btn_kids'], callback_data='show_kids')
+  btn_adults = types.InlineKeyboardButton(t['btn_adults'], callback_data='show_adults')
+  btn_free = types.InlineKeyboardButton(t['btn_free'], callback_data='show_free')
+  btn_lang = types.InlineKeyboardButton(t['btn_lang'], callback_data='change_lang')
+  markup.add(btn_kids, btn_adults, btn_free, btn_lang)
+
+  try:
+    bot.edit_message_text(
+        t['welcome'],
+        call.message.chat.id,
+        call.message.message_id,
+        reply_markup=markup,
+        parse_mode='Markdown',
+    )
+  except Exception as e:
+    print(f"Error in back_main: {e}")
+
+@bot.callback_query_handler(func=lambda call: call.data.startswith('buy_'))
+def handle_payment(call):
+  try:
+    parts = call.data.split('_')
+    category = parts[1]
+    index = int(parts[2])
+
+    item = KIDS_VIDEOS[index] if category == 'kids' else ADULT_VIDEOS[index]
+    user_id = str(call.message.chat.id)
+
+    data = load_data()
+    lang = data.get(user_id, {}).get('lang', 'ar') or 'ar'
+
+    price = item['price']
+    title = item['title'][lang]
+
+    bot.answer_callback_query(call.id, f'السعر المطلوب: {price} نجوم')
+
+    media_list = [types.InputMediaVideo(media=fid) for fid in item['files']]
+
+    caption = (
+        f'✨ شكراً لثقتك!\nاستمتع بمشاهدة: {title}\n💰 السعر المدفوع: {price} نجوم.'
+        if lang == 'ar'
+        else f'✨ Thank you!\nEnjoy watching: {title}\n💰 Paid Price: {price} Stars.'
+    )
+
+    bot.send_paid_media(
+        chat_id=call.message.chat.id,
+        star_count=price,
+        media=media_list,
+        caption=caption,
+    )
+  except Exception as e:
+    print(f"Error in handle_payment: {e}")
+    try:
+      bot.answer_callback_query(call.id, "حدث خطأ ما، يرجى المحاولة لاحقاً.")
+    except:
+      pass
+
+if __name__ == '__main__':
+  bot.remove_webhook()
+  print('🚀 البوت يعمل الآن بنجاح...')
+  bot.infinity_polling()
