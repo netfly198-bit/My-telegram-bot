@@ -1,7 +1,7 @@
-from flask import Flask
 import json
 import os
 from threading import Thread
+from flask import Flask
 import telebot
 from telebot import types
 
@@ -42,7 +42,7 @@ def save_data(data):
 
 # --- 3️⃣ قوائم الفيديوهات ---
 
-# 🎁 قائمة الفيديوهات المجانية (25 فيديو فريد)
+# 🎁 قائمة الفيديوهات المجانية (25 فيديو)
 FREE_VIDEOS = [
     {
         'title': {'ar': '🎥 فيديو مجاني 1', 'en': '🎥 Free Video 1'},
@@ -472,15 +472,16 @@ TEXTS = {
         'adults_header': '🎥 قائمة فيديوهات الكبار:',
         'free_header': '🎁 قائمة الفيديوهات المجانية:',
         'discount_info': (
-            '🎁 عرض خاص 50%\n\nاحصل على تخفيض 50% على جميع الفيديوهات!\nكل ما'
+            '🎁 **عرض خاص 50%**\n\nاحصل على تخفيض 50% على جميع الفيديوهات!\nكل ما'
             ' عليك هو دعوة 20 شخصاً عبر رابطك الخاص لتفعيل العرض تلقائياً.\n\n📊'
-            ' رصيدك الحالي: {invites} / 20 دعوة.\n📌 حالة العرض: {status}\n\n🔗'
-            ' رابط الدعوة الخاص بك:\n{link}'
+            ' **رصيدك الحالي:** {invites} / 20 دعوة.\n📌 **حالة العرض:**'
+            ' {status}\n\n🔗 **رابط الدعوة الخاص بك:**\n{link}'
         ),
         'status_active': '✅ تم تفعيل الخصم 50% بنجاح!',
         'status_pending': '⏳ متبقي لديك: {rem} دعوة لتفعيل الخصم.',
         'btn_back': '🔙 العودة للقائمة الرئيسية',
         'new_invite': '🎉 انضم شخص جديد عبر رابطك!',
+        'block_photo': '⚠️ عذراً، إرسال الصور أو اللقطات (Screenshots) غير متاح.',
     },
     'en': {
         'welcome': (
@@ -495,28 +496,40 @@ TEXTS = {
         'adults_header': '🎥 Adult Videos List:',
         'free_header': '🎁 Free Videos List:',
         'discount_info': (
-            '🎁 Special Offer 50%\n\nGet a 50% discount on all videos!\nInvite'
-            ' 20 people using your link to unlock the offer'
-            ' automatically.\n\n📊 Current balance: {invites} / 20'
-            ' invites.\n📌 Status: {status}\n\n🔗 Your referral link:\n{link}'
+            '🎁 **Special Offer 50%**\n\nGet a 50% discount on all'
+            ' videos!\nInvite 20 people using your link to unlock the offer'
+            ' automatically.\n\n📊 **Current balance:** {invites} / 20'
+            ' invites.\n📌 **Status:** {status}\n\n🔗 **Your referral'
+            ' link:**\n{link}'
         ),
         'status_active': '✅ 50% discount activated successfully!',
         'status_pending': '⏳ Remaining: {rem} invites to activate discount.',
         'btn_back': '🔙 Back to Main Menu',
         'new_invite': '🎉 A new user joined using your link!',
+        'block_photo': '⚠️ Sorry, sending photos or screenshots is not allowed.',
     },
 }
 
 # --- 5️⃣ أوامر وأحداث البوت ---
 
 
+# 🎥 السماح بأخذ File ID من الفيديوهات لأي مستخدم
 @bot.message_handler(content_types=['video'])
 def get_file_id(message):
   bot.reply_to(
       message,
-      f'⚙️ Developer Tools\n\nFile ID:\n{message.video.file_id}',
+      f'⚙️ **File ID الخاص بالفيديو:**\n`{message.video.file_id}`',
       parse_mode='Markdown',
   )
+
+
+# 🚫 حظر إرسال الصور واللقطات (Screenshots)
+@bot.message_handler(content_types=['photo'])
+def block_photos(message):
+  user_id = str(message.chat.id)
+  data = load_data()
+  lang = data.get(user_id, {}).get('lang', 'ar') or 'ar'
+  bot.reply_to(message, TEXTS[lang]['block_photo'])
 
 
 @bot.message_handler(commands=['start'])
@@ -618,7 +631,7 @@ def change_lang_callback(call):
 def show_free_callback(call):
   user_id = str(call.message.chat.id)
   data = load_data()
-  lang = data.get(user_id, {}).get('lang', 'ar')
+  lang = data.get(user_id, {}).get('lang', 'ar') or 'ar'
   t = TEXTS[lang]
 
   markup = types.InlineKeyboardMarkup(row_width=1)
@@ -651,7 +664,7 @@ def handle_free_video(call):
   user_id = str(call.message.chat.id)
 
   data = load_data()
-  lang = data.get(user_id, {}).get('lang', 'ar')
+  lang = data.get(user_id, {}).get('lang', 'ar') or 'ar'
   title = item['title'][lang]
 
   bot.answer_callback_query(call.id, 'جاري إرسال الفيديو...')
@@ -670,7 +683,7 @@ def handle_free_video(call):
         caption=caption,
         parse_mode='Markdown',
     )
-  except Exception as e:
+  except Exception:
     bot.send_message(
         call.message.chat.id,
         '⚠️ عذراً، تعذر إرسال الفيديو.'
@@ -684,7 +697,7 @@ def handle_free_video(call):
 def show_kids_callback(call):
   user_id = str(call.message.chat.id)
   data = load_data()
-  lang = data.get(user_id, {}).get('lang', 'ar')
+  lang = data.get(user_id, {}).get('lang', 'ar') or 'ar'
   invites = data.get(user_id, {}).get('invites', 0)
   t = TEXTS[lang]
 
@@ -716,7 +729,7 @@ def show_kids_callback(call):
 def show_adults_callback(call):
   user_id = str(call.message.chat.id)
   data = load_data()
-  lang = data.get(user_id, {}).get('lang', 'ar')
+  lang = data.get(user_id, {}).get('lang', 'ar') or 'ar'
   invites = data.get(user_id, {}).get('invites', 0)
   t = TEXTS[lang]
 
@@ -743,14 +756,14 @@ def show_adults_callback(call):
   )
 
 
+# 🎁 عرض الخاص
 @bot.callback_query_handler(func=lambda call: call.data == 'show_discount')
 def show_discount_callback(call):
-  # 💡 تم إضافة السطر هنا لإعلام تلغرام واستجابة الزر فوراً
   bot.answer_callback_query(call.id)
 
   user_id = str(call.message.chat.id)
   data = load_data()
-  lang = data.get(user_id, {}).get('lang', 'ar')
+  lang = data.get(user_id, {}).get('lang', 'ar') or 'ar'
   invites = data.get(user_id, {}).get('invites', 0)
   t = TEXTS[lang]
 
@@ -784,7 +797,7 @@ def show_discount_callback(call):
 def back_main_callback(call):
   user_id = str(call.message.chat.id)
   data = load_data()
-  lang = data.get(user_id, {}).get('lang', 'ar')
+  lang = data.get(user_id, {}).get('lang', 'ar') or 'ar'
   t = TEXTS[lang]
 
   markup = types.InlineKeyboardMarkup(row_width=1)
@@ -814,18 +827,18 @@ def back_main_callback(call):
   )
 
 
-# 🛒 معالجة شراء فيديوهات الصغار والكبار (تليجرام ستارز)
+# 🛒 معالجة شراء فيديوهات الصغار والكبار
 @bot.callback_query_handler(func=lambda call: call.data.startswith('buy_'))
 def handle_payment(call):
   parts = call.data.split('_')
-  category = parts[1]  # kids أو adults
+  category = parts[1]
   index = int(parts[2])
 
   item = KIDS_VIDEOS[index] if category == 'kids' else ADULT_VIDEOS[index]
   user_id = str(call.message.chat.id)
 
   data = load_data()
-  lang = data.get(user_id, {}).get('lang', 'ar')
+  lang = data.get(user_id, {}).get('lang', 'ar') or 'ar'
   invites = data.get(user_id, {}).get('invites', 0)
 
   price = item['price'] // 2 if invites >= 20 else item['price']
